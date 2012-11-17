@@ -1,0 +1,46 @@
+Release Notes
+=============
+
+
+AI Sandbox
+----------
+
+AI Sandbox 0.20.1
+~~~~~~~~~~~~~~~~~
+`released November 12, 2012`
+
+- Fixed a crash bug between games that was caused by queries being destroyed before they had finished executing.
+- Removed the framerate lock imposed on the console only server used in competition.bat. This may be reimposed again in the future.
+
+AI Sandbox 0.20.0
+~~~~~~~~~~~~~~~~~
+`released November 7, 2012`
+
+- Initial version
+
+
+Capture The Flag SDK
+--------------------
+
+Capture The Flag SDK 1.1
+~~~~~~~~~~~~~~~~~~~~~~~~
+`released November 12, 2012`
+
+- Fixed the paths causing the import error in competition.py when run from competition.bat.
+- Fixed a problem with import platform.py picking up a file from the standard python installation instead of a local file.
+- Removed BotInfo.currentAction (use BotInfo.state instead).
+- Fixed initialization of TeamInfo.botSpawnArea.
+- Fixed the BotInfo.visibleEnemies and BotInfo.seenLast arrays to contain the correct BotInfo types instead of the internal Character type.
+- Clamp target position to world dimensions in LevelInfo.findRandomFreePositionInBox.
+- Prevent zombie bot attacks - no longer execute commands on dead bots.
+- Call shutdown on each commander at the end of each game.
+- Renamed the MyCommander in mycmd.py to PlaceHolderCommander and replaced the tick function's use of commands.Stop with commands.Charge.
+- Tweaks to the example commanders.
+- Added documentation for the network protocol that will be used from the next release. This is to allow support for additional languages.
+
+Capture The Flag SDK 1.0
+~~~~~~~~~~~~~~~~~~~~~~~~
+`released November 7, 2012`
+
+- Initial version
+

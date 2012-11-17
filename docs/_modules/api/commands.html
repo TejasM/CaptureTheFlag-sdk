@@ -1,0 +1,254 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>api.commands &mdash; Capture The Flag alpha documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     'alpha',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="Capture The Flag alpha documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Capture The Flag alpha documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for api.commands</h1><div class="highlight"><pre>
+<span class="kn">from</span> <span class="nn">api</span> <span class="kn">import</span> <span class="n">Vector2</span>
+
+<div class="viewcode-block" id="Defend"><a class="viewcode-back" href="../../api.html#api.commands.Defend">[docs]</a><span class="k">class</span> <span class="nc">Defend</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Commands a bot to defend its current position.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">botId</span><span class="p">,</span> <span class="n">facingDirection</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">description</span> <span class="o">=</span> <span class="s">&#39;&#39;</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">botId</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="p">(</span><span class="n">facingDirection</span> <span class="o">==</span> <span class="bp">None</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">facingDirection</span><span class="p">,</span> <span class="n">Vector2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">botId</span> <span class="o">=</span> <span class="n">botId</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The name of the bot</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">facingDirection</span> <span class="o">=</span> <span class="n">facingDirection</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The desired facing direction (Vector2) of the bot. If this is None the bot remains facing its current facing direction.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">description</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A description of the intention of the bot. This is displayed automatically if the commander sets self.verbose = True</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+</div>
+<div class="viewcode-block" id="Move"><a class="viewcode-back" href="../../api.html#api.commands.Move">[docs]</a><span class="k">class</span> <span class="nc">Move</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Commands a bot to run to a specified position without attacking visible enemies.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">botId</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">description</span> <span class="o">=</span> <span class="s">&#39;&#39;</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">botId</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">Vector2</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">target</span><span class="p">:</span> <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">Vector2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">botId</span> <span class="o">=</span> <span class="n">botId</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The name of the bot</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target</span> <span class="o">=</span> <span class="n">target</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The target destination (Vector2) or list of destination waypoints ([Vector2])</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">description</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A description of the intention of the bot. This is displayed automatically if the commander sets self.verbose = True</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+</div>
+<div class="viewcode-block" id="Attack"><a class="viewcode-back" href="../../api.html#api.commands.Attack">[docs]</a><span class="k">class</span> <span class="nc">Attack</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Commands a bot to attack a specified position.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">botId</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">lookAt</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">description</span> <span class="o">=</span> <span class="s">&#39;&#39;</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">botId</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">Vector2</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">target</span><span class="p">:</span> <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">Vector2</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">lookAt</span> <span class="o">==</span> <span class="bp">None</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lookAt</span><span class="p">,</span> <span class="n">Vector2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">botId</span> <span class="o">=</span> <span class="n">botId</span> 
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The name of the bot</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target</span> <span class="o">=</span> <span class="n">target</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The target destination (Vector2) or list of destination waypoints ([Vector2])</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lookAt</span> <span class="o">=</span> <span class="n">lookAt</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        An optional position (Vector2) which the bot should look at while moving</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">description</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A description of the intention of the bot. This is displayed automatically if the commander sets self.verbose = True</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+</div>
+<div class="viewcode-block" id="Charge"><a class="viewcode-back" href="../../api.html#api.commands.Charge">[docs]</a><span class="k">class</span> <span class="nc">Charge</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Commands a bot to attack a specified position at a running pace. This is faster than Attack but incurs an additional firing delay penalty.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">botId</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">description</span> <span class="o">=</span> <span class="s">&#39;&#39;</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">botId</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">Vector2</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">target</span><span class="p">:</span> <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">Vector2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">botId</span> <span class="o">=</span> <span class="n">botId</span> 
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The name of the bot</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target</span> <span class="o">=</span> <span class="n">target</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The target destination (Vector2) or list of destination waypoints ([Vector2])</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">description</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A description of the intention of the bot. This is displayed automatically if the commander sets self.verbose = True</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+</div>
+<span class="k">def</span> <span class="nf">toJSON</span><span class="p">(</span><span class="n">python_object</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">python_object</span><span class="p">,</span> <span class="n">Vector2</span><span class="p">):</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">python_object</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">v</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">v</span><span class="o">.</span><span class="n">y</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">python_object</span><span class="p">,</span> <span class="n">Defend</span><span class="p">):</span>
+        <span class="n">command</span> <span class="o">=</span> <span class="n">python_object</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s">&#39;__class__&#39;</span><span class="p">:</span> <span class="s">&#39;Defend&#39;</span><span class="p">,</span>
+                <span class="s">&#39;__value__&#39;</span><span class="p">:</span> <span class="p">{</span> <span class="s">&#39;bot&#39;</span><span class="p">:</span> <span class="n">command</span><span class="o">.</span><span class="n">botId</span><span class="p">,</span> <span class="s">&#39;facingDirection&#39;</span><span class="p">:</span> <span class="n">command</span><span class="o">.</span><span class="n">facingDirection</span><span class="p">,</span> <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="n">command</span><span class="o">.</span><span class="n">description</span> <span class="p">}}</span>   
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">python_object</span><span class="p">,</span> <span class="n">Move</span><span class="p">):</span>
+        <span class="n">command</span> <span class="o">=</span> <span class="n">python_object</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s">&#39;__class__&#39;</span><span class="p">:</span> <span class="s">&#39;Move&#39;</span><span class="p">,</span>
+                <span class="s">&#39;__value__&#39;</span><span class="p">:</span> <span class="p">{</span> <span class="s">&#39;bot&#39;</span><span class="p">:</span> <span class="n">command</span><span class="o">.</span><span class="n">botId</span><span class="p">,</span> <span class="s">&#39;target&#39;</span><span class="p">:</span> <span class="n">command</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="n">command</span><span class="o">.</span><span class="n">description</span> <span class="p">}}</span>   
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">python_object</span><span class="p">,</span> <span class="n">Attack</span><span class="p">):</span>
+        <span class="n">command</span> <span class="o">=</span> <span class="n">python_object</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s">&#39;__class__&#39;</span><span class="p">:</span> <span class="s">&#39;Attack&#39;</span><span class="p">,</span>
+                <span class="s">&#39;__value__&#39;</span><span class="p">:</span> <span class="p">{</span> <span class="s">&#39;bot&#39;</span><span class="p">:</span> <span class="n">command</span><span class="o">.</span><span class="n">botId</span><span class="p">,</span> <span class="s">&#39;target&#39;</span><span class="p">:</span> <span class="n">command</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="s">&#39;lookAt&#39;</span><span class="p">:</span> <span class="n">command</span><span class="o">.</span><span class="n">lookAt</span><span class="p">,</span> <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="n">command</span><span class="o">.</span><span class="n">description</span> <span class="p">}}</span>   
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">python_object</span><span class="p">,</span> <span class="n">Charge</span><span class="p">):</span>
+        <span class="n">command</span> <span class="o">=</span> <span class="n">python_object</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s">&#39;__class__&#39;</span><span class="p">:</span> <span class="s">&#39;Charge&#39;</span><span class="p">,</span>
+                <span class="s">&#39;__value__&#39;</span><span class="p">:</span> <span class="p">{</span> <span class="s">&#39;bot&#39;</span><span class="p">:</span> <span class="n">command</span><span class="o">.</span><span class="n">botId</span><span class="p">,</span> <span class="s">&#39;target&#39;</span><span class="p">:</span> <span class="n">command</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="n">command</span><span class="o">.</span><span class="n">description</span> <span class="p">}}</span>   
+
+    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">python_object</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39; is not JSON serializable&#39;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">toVector2</span><span class="p">(</span><span class="nb">list</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">list</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">None</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
+    <span class="k">return</span> <span class="n">Vector2</span><span class="p">(</span><span class="nb">list</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">list</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+
+<span class="k">def</span> <span class="nf">fromJSON</span><span class="p">(</span><span class="n">dct</span><span class="p">):</span>
+    <span class="k">if</span> <span class="s">&#39;__class__&#39;</span> <span class="ow">in</span> <span class="n">dct</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">dct</span><span class="p">[</span><span class="s">&#39;__class__&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;Defend&#39;</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">dct</span><span class="p">[</span><span class="s">&#39;__value__&#39;</span><span class="p">]</span>
+            <span class="n">facingDirection</span> <span class="o">=</span> <span class="n">toVector2</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s">&#39;facingDirection&#39;</span><span class="p">])</span> <span class="k">if</span> <span class="n">value</span><span class="p">[</span><span class="s">&#39;facingDirection&#39;</span><span class="p">]</span> <span class="k">else</span> <span class="bp">None</span>
+            <span class="k">return</span> <span class="n">Defend</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s">&#39;bot&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;utf-8&#39;</span><span class="p">),</span> <span class="n">facingDirection</span><span class="p">,</span> <span class="n">description</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s">&#39;description&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;utf-8&#39;</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">dct</span><span class="p">[</span><span class="s">&#39;__class__&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;Move&#39;</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">dct</span><span class="p">[</span><span class="s">&#39;__value__&#39;</span><span class="p">]</span>
+            <span class="n">target</span> <span class="o">=</span> <span class="n">toVector2</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s">&#39;target&#39;</span><span class="p">])</span>
+            <span class="k">return</span> <span class="n">Move</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s">&#39;bot&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;utf-8&#39;</span><span class="p">),</span> <span class="n">target</span><span class="p">,</span> <span class="n">description</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s">&#39;description&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;utf-8&#39;</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">dct</span><span class="p">[</span><span class="s">&#39;__class__&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;Attack&#39;</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">dct</span><span class="p">[</span><span class="s">&#39;__value__&#39;</span><span class="p">]</span>
+            <span class="n">target</span> <span class="o">=</span> <span class="n">toVector2</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s">&#39;target&#39;</span><span class="p">])</span>
+            <span class="n">lookAt</span> <span class="o">=</span> <span class="n">toVector2</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s">&#39;lookAt&#39;</span><span class="p">])</span>
+            <span class="k">return</span> <span class="n">Attack</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s">&#39;bot&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;utf-8&#39;</span><span class="p">),</span> <span class="n">target</span><span class="p">,</span> <span class="n">lookAt</span> <span class="o">=</span> <span class="n">lookAt</span><span class="p">,</span> <span class="n">description</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s">&#39;description&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;utf-8&#39;</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">dct</span><span class="p">[</span><span class="s">&#39;__class__&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;Charge&#39;</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">dct</span><span class="p">[</span><span class="s">&#39;__value__&#39;</span><span class="p">]</span>
+            <span class="n">target</span> <span class="o">=</span> <span class="n">toVector2</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s">&#39;target&#39;</span><span class="p">])</span>
+            <span class="k">return</span> <span class="n">Charge</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s">&#39;bot&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;utf-8&#39;</span><span class="p">),</span> <span class="n">target</span><span class="p">,</span> <span class="n">description</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s">&#39;description&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;utf-8&#39;</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">dct</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Capture The Flag alpha documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, AiGameDev.com KG.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

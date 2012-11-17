@@ -1,0 +1,448 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>1. Network Data Protocol &mdash; Capture The Flag alpha documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     'alpha',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Capture The Flag alpha documentation" href="index.html" />
+    <link rel="next" title="2. Python API Documentation" href="api.html" />
+    <link rel="prev" title="Capture The Flag Python API Documentation" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="api.html" title="2. Python API Documentation"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Capture The Flag Python API Documentation"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Capture The Flag alpha documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="network-data-protocol">
+<h1>1. Network Data Protocol<a class="headerlink" href="#network-data-protocol" title="Permalink to this headline">¶</a></h1>
+<p>This page describes the network protocol used to communicate between a commander and the game server. JSON is used for the serialization of most data objects. Newline characters
+are used for separation between objects in the protocol, so should not be used as part of the JSON serialization. The details of the JSON serialization format for each object is
+described further below</p>
+<div class="section" id="connection-handshaking">
+<h2>1.1. Connection Handshaking<a class="headerlink" href="#connection-handshaking" title="Permalink to this headline">¶</a></h2>
+<p>Immediately after connecting to the server socket the server and client exchange two messages. The first of these is sent from the server to the client, consisting of:</p>
+<p>1. A line containing the string <cite>&lt;connect&gt;</cite>
+1. A line containing the JSON serialized ServerConnect object.</p>
+<p>Example:</p>
+<div class="highlight-python"><pre>&lt;connect&gt;
+{"__class__": "ServerConnect", "__value__": {"protocolVersion": "1.0"}};</pre>
+</div>
+<p>The second is a message from the client to the server containing:</p>
+<p>1. A line containing the string <cite>&lt;connect&gt;</cite>
+1. A line containing the JSON serialized ClientConnect object.</p>
+<p>Example:</p>
+<div class="highlight-python"><pre>&lt;connect&gt;
+{"__class__": "ClientConnect", "__value__": {"language": "python", "commanderName": "MyCommander"}};</pre>
+</div>
+</div>
+<div class="section" id="communication-from-the-game-server-to-the-commander">
+<h2>1.2. Communication from the Game Server to the Commander<a class="headerlink" href="#communication-from-the-game-server-to-the-commander" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="initialize">
+<h3>1.2.1. Initialize<a class="headerlink" href="#initialize" title="Permalink to this headline">¶</a></h3>
+<p>At the start of the game, the game server will send an <cite>initialize</cite> message to each commander. The message consists of:
+1. A line containing the string <cite>&lt;initialize&gt;</cite>
+1. A line containing the JSON serialized LevelInfo object.
+1. A line containing the JSON serialized GameInfo object.</p>
+<p>The following is an example initialize message:</p>
+<div class="highlight-python"><pre>&lt;initialize&gt;
+{"__class__": "LevelInfo", "__value__": {"runningSpeed": 6.0, "flagSpawnLocations": {"Blue": [82.0, 20.0], "Red": [6.0, 30.0]}, "teamNames": ["Blue", "Red"], "blockHeights": [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 4, 4, 4, 4, 2, 2, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 4, 4, 4, 4, 2, 2, 0, 0, 0, 0, 0, 0, 1, 2, 2, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 4, 4, 4, 4, 1, 1, 0, 0, 0, 0, 0, 0, 1, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2], [0, 0, 2, 2, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2], [0, 0, 2, 2, 1, 0, 0, 0, 0, 0, 1, 4, 4, 4, 4, 0, 0, 0, 0, 1, 1, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0], [0, 0, 4, 4, 4, 4, 1, 0, 0, 0, 1, 4, 4, 4, 4, 0, 0, 0, 0, 0, 1, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0], [0, 0, 4, 4, 4, 4, 1, 0, 0, 0, 1, 4, 4, 4, 4, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 1, 1, 2, 2, 1, 1, 0, 0, 0, 0, 0, 0], [0, 0, 4, 4, 4, 4, 1, 0, 0, 0, 0, 4, 4, 4, 4, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0], [0, 0, 4, 4, 4, 4, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0], [0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0], [0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 0, 0, 0, 4, 4, 4, 4, 0, 0, 0, 1, 4, 4, 4, 4, 1, 0, 0, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 0, 0, 0, 1, 4, 4, 4, 4, 1, 0, 0, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 2, 2, 1, 0, 0, 0], [0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 1, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 0, 0, 0, 1, 1, 2, 2, 1, 0, 0, 0, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 2, 2, 1, 0, 0, 0], [0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 1, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 0, 0, 0, 0, 0, 2, 2, 1, 0, 0, 0, 2, 2, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0], [0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 1, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 4, 4, 4, 4, 1, 0, 0, 0, 1, 2, 2, 1, 1, 1, 0], [0, 0, 0, 0, 2, 2, 4, 4, 4, 4, 0, 0, 0, 0, 0, 4, 4, 4, 4, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 4, 4, 4, 4, 1, 0, 0, 0, 1, 2, 2, 1, 2, 2, 0], [0, 0, 0, 0, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0, 0, 4, 4, 4, 4, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 4, 4, 4, 4, 1, 0, 0, 0, 0, 1, 1, 1, 2, 2, 0], [0, 0, 0, 0, 1, 1, 2, 2, 1, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 1, 0, 0, 0, 0, 0, 4, 4, 4, 4, 1, 0, 0, 0, 0, 1, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 1, 2, 2, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 1, 0, 0, 0, 0, 0, 4, 4, 4, 4, 2, 2, 0, 0, 0, 0, 0, 2, 2, 1, 0, 0, 0, 0, 0, 0, 1, 2, 2, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 4, 4, 4, 4, 2, 2, 1, 0, 0, 0, 0, 2, 2, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0], [1, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 4, 4, 4, 4, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 1, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 1, 0, 0, 0, 0, 0, 2, 2, 2, 2, 0, 0, 0, 1, 2, 2, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0], [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 1, 0, 0, 0, 4, 4, 4, 4, 1, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 4, 4, 4, 4, 1, 0, 0, 0, 4, 4, 4, 4, 1, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 4, 4, 4, 4, 1, 0, 0, 0, 4, 4, 4, 4, 1, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 4, 4, 4, 4, 1, 0, 0, 0, 4, 4, 4, 4, 1, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 4, 4, 4, 4, 1, 0, 0, 0, 4, 4, 4, 4, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 4, 4, 4, 4, 1, 0, 0, 0, 4, 4, 4, 4, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 4, 4, 4, 4, 1, 0, 0, 0, 4, 4, 4, 4, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 4, 4, 4, 4, 1, 0, 0, 0, 4, 4, 4, 4, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0], [0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 1, 2, 2, 0, 0, 0, 2, 2, 2, 2, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 1, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 4, 4, 4, 4, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 4, 4, 4, 4, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 1], [0, 0, 2, 2, 1, 0, 0, 0, 0, 0, 0, 2, 2, 1, 0, 0, 0, 0, 1, 4, 4, 4, 4, 2, 2, 1, 0, 0, 0, 0, 4, 4, 4, 4, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 2, 2, 1, 0, 0, 0, 0, 0, 0, 2, 2, 1, 0, 0, 0, 0, 0, 4, 4, 4, 4, 2, 2, 0, 0, 0, 0, 0, 4, 4, 4, 4, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 4, 4, 4, 4, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 2, 2, 0, 0, 0, 0], [0, 2, 2, 2, 2, 1, 0, 0, 0, 0, 1, 4, 4, 4, 4, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 4, 4, 4, 4, 1, 0, 0, 0, 0, 0, 4, 4, 4, 4, 2, 2, 0, 0, 0, 0], [0, 2, 2, 2, 2, 2, 2, 0, 0, 0, 1, 4, 4, 4, 4, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 1, 1, 1, 1, 0, 0, 0, 0, 0, 4, 4, 4, 4, 1, 1, 0, 0, 0, 0], [0, 1, 1, 1, 1, 2, 2, 0, 0, 0, 1, 4, 4, 4, 4, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 1, 0, 0, 0, 0, 0, 0, 0, 1, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0], [0, 0, 0, 1, 2, 2, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 2, 2, 1, 0, 0, 0, 0, 0, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 1, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0], [0, 0, 0, 1, 2, 2, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 0, 0, 0, 2, 2, 1, 2, 2, 0, 0, 0, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 1, 1, 0, 0, 0, 0, 0, 0], [0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 0, 0, 4, 4, 4, 4, 2, 2, 0, 0, 0, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 4, 4, 4, 4, 1, 1, 0, 0, 0, 2, 2, 2, 2, 0, 0, 0, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0], [0, 0, 0, 0, 0, 0, 0, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0], [0, 0, 0, 0, 0, 0, 0, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 4, 4, 4, 4, 0, 0, 0, 0, 4, 4, 4, 4, 1, 0, 0], [0, 0, 0, 0, 0, 0, 0, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 4, 4, 4, 4, 0, 0, 0, 0, 4, 4, 4, 4, 1, 0, 0], [0, 0, 0, 0, 0, 0, 1, 2, 2, 2, 2, 1, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 4, 4, 4, 4, 1, 0, 0, 0, 4, 4, 4, 4, 1, 0, 0], [0, 0, 0, 0, 0, 0, 1, 2, 2, 2, 2, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 1, 0, 0, 0, 0, 0, 4, 4, 4, 4, 1, 0, 0, 0, 4, 4, 4, 4, 1, 0, 0], [0, 0, 0, 0, 0, 0, 1, 2, 2, 1, 2, 2, 1, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 1, 1, 0, 0, 0, 0, 1, 1, 2, 2, 1, 0, 0, 0, 0, 0, 2, 2, 1, 0, 0], [2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 1, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 1, 0, 0, 0, 0, 0, 0, 0, 2, 2, 1, 0, 0, 0, 0, 0, 2, 2, 1, 0, 0], [2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 2, 2, 4, 4, 4, 4, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 2, 2, 0, 0, 0, 0, 0, 0, 2, 2, 4, 4, 4, 4, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 1, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 1, 0, 0, 0, 0, 0, 0, 1, 1, 4, 4, 4, 4, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 1, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]], "height": 50, "characterRadius": 0.25, "walkingSpeed": 3.0, "FOVangle": 1.5707963267948966, "botSpawnAreas": {"Blue": [[79.0, 2.0], [85.0, 9.0]], "Red": [[3.0, 41.0], [9.0, 48.0]]}, "firingDistance": 15.0, "width": 88, "flagScoreLocations": {"Blue": [82.0, 20.0], "Red": [6.0, 30.0]}}}
+{"__class__": "GameInfo", "__value__": {"teams": {"Blue": {"__class__": "TeamInfo", "__value__": {"flagScoreLocation": [82.0, 20.0], "name": "Blue", "flagSpawnLocation": [82.0, 20.0], "flag": "BlueFlag", "members": ["Blue0", "Blue1", "Blue2", "Blue3", "Blue4"], "botSpawnArea": [[79.0, 2.0], [85.0, 9.0]]}}, "Red": {"__class__": "TeamInfo", "__value__": {"flagScoreLocation": [6.0, 30.0], "name": "Red", "flagSpawnLocation": [6.0, 30.0], "flag": "RedFlag", "members": ["Red0", "Red1", "Red2", "Red3", "Red4"], "botSpawnArea": [[3.0, 41.0], [9.0, 48.0]]}}}, "flags": {"BlueFlag": {"__class__": "FlagInfo", "__value__": {"position": [82.0, 20.0], "carrier": null, "name": "BlueFlag", "respawnTimer": 0.10000000149011612, "team": "Blue"}}, "RedFlag": {"__class__": "FlagInfo", "__value__": {"position": [6.0, 30.0], "carrier": null, "name": "RedFlag", "respawnTimer": 0.10000000149011612, "team": "Red"}}}, "enemyTeam": "Red", "team": "Blue", "bots": {"Red3": {"__class__": "BotInfo", "__value__": {"seenBy": [], "flag": null, "name": "Red3", "facingDirection": null, "state": 0, "health": 0.0, "seenlast": null, "team": "Red", "currentAction": null, "position": null, "visibleEnemies": []}}, "Red2": {"__class__": "BotInfo", "__value__": {"seenBy": [], "flag": null, "name": "Red2", "facingDirection": null, "state": 0, "health": 0.0, "seenlast": null, "team": "Red", "currentAction": null, "position": null, "visibleEnemies": []}}, "Red1": {"__class__": "BotInfo", "__value__": {"seenBy": [], "flag": null, "name": "Red1", "facingDirection": null, "state": 0, "health": 0.0, "seenlast": null, "team": "Red", "currentAction": null, "position": null, "visibleEnemies": []}}, "Red0": {"__class__": "BotInfo", "__value__": {"seenBy": [], "flag": null, "name": "Red0", "facingDirection": null, "state": 0, "health": 0.0, "seenlast": null, "team": "Red", "currentAction": null, "position": null, "visibleEnemies": []}}, "Red4": {"__class__": "BotInfo", "__value__": {"seenBy": [], "flag": null, "name": "Red4", "facingDirection": null, "state": 0, "health": 0.0, "seenlast": null, "team": "Red", "currentAction": null, "position": null, "visibleEnemies": []}}, "Blue1": {"__class__": "BotInfo", "__value__": {"seenBy": [], "flag": null, "name": "Blue1", "facingDirection": [0.06574580073356628, 0.9978364109992981], "state": 1, "health": 100.0, "seenlast": null, "team": "Blue", "currentAction": null, "position": [81.11000061035156, 6.492311954498291], "visibleEnemies": []}}, "Blue0": {"__class__": "BotInfo", "__value__": {"seenBy": [], "flag": null, "name": "Blue0", "facingDirection": [0.10403892397880554, 0.9945732355117798], "state": 1, "health": 100.0, "seenlast": null, "team": "Blue", "currentAction": null, "position": [80.45407104492188, 5.22149658203125], "visibleEnemies": []}}, "Blue3": {"__class__": "BotInfo", "__value__": {"seenBy": [], "flag": null, "name": "Blue3", "facingDirection": [0.22079943120479584, 0.9753192663192749], "state": 1, "health": 100.0, "seenlast": null, "team": "Blue", "currentAction": null, "position": [79.2674331665039, 7.929657459259033], "visibleEnemies": []}}, "Blue2": {"__class__": "BotInfo", "__value__": {"seenBy": [], "flag": null, "name": "Blue2", "facingDirection": [0.0015204440569505095, 0.9999988675117493], "state": 1, "health": 100.0, "seenlast": null, "team": "Blue", "currentAction": null, "position": [81.97264862060547, 2.010946273803711], "visibleEnemies": []}}, "Blue4": {"__class__": "BotInfo", "__value__": {"seenBy": [], "flag": null, "name": "Blue4", "facingDirection": [0.2348455935716629, 0.9720326662063599], "state": 1, "health": 100.0, "seenlast": null, "team": "Blue", "currentAction": null, "position": [79.1587905883789, 8.240152359008789], "visibleEnemies": []}}}, "match": {"__class__": "MatchInfo", "__value__": {"timeRemaining": 180.0, "timeToNextRespawn": 45.0, "combatEvents": [], "timePassed": 0.0, "scores": {"Blue": 0, "Red": 0}}}}}</pre>
+</div>
+</div>
+<div class="section" id="tick">
+<h3>1.2.2. Tick<a class="headerlink" href="#tick" title="Permalink to this headline">¶</a></h3>
+<p>Periodically (eg every 0.1 seconds) the game server will send a tick message the current game state. The message consists of:
+1. A line containing the string <cite>&lt;tick&gt;</cite>
+1. A line containing the JSON serialized GameInfo object.</p>
+<p>The following is an example tick message:</p>
+<div class="highlight-python"><pre>&lt;tick&gt;
+{"__class__": "GameInfo", "__value__": {"teams": {"Blue": {"__class__": "TeamInfo", "__value__": {"flagScoreLocation": [82.0, 20.0], "name": "Blue", "flagSpawnLocation": [82.0, 20.0], "flag": "BlueFlag", "members": ["Blue0", "Blue1", "Blue2", "Blue3", "Blue4"], "botSpawnArea": [[79.0, 2.0], [85.0, 9.0]]}}, "Red": {"__class__": "TeamInfo", "__value__": {"flagScoreLocation": [6.0, 30.0], "name": "Red", "flagSpawnLocation": [6.0, 30.0], "flag": "RedFlag", "members": ["Red0", "Red1", "Red2", "Red3", "Red4"], "botSpawnArea": [[3.0, 41.0], [9.0, 48.0]]}}}, "flags": {"BlueFlag": {"__class__": "FlagInfo", "__value__": {"position": [82.0, 20.0], "carrier": null, "name": "BlueFlag", "respawnTimer": -7.450580596923828e-09, "team": "Blue"}}, "RedFlag": {"__class__": "FlagInfo", "__value__": {"position": [9.723822593688965, 28.638526916503906], "carrier": "Blue1", "name": "RedFlag", "respawnTimer": -7.450580596923828e-09, "team": "Red"}}}, "enemyTeam": "Red", "team": "Blue", "bots": {"Red3": {"__class__": "BotInfo", "__value__": {"seenBy": [], "flag": null, "name": "Red3", "facingDirection": [0.9375345706939697, -0.3478919267654419], "state": 6, "health": 0, "seenlast": 13.370665550231934, "team": "Red", "currentAction": "ShootAtCommand", "position": [35.6309928894043, 26.81215476989746], "visibleEnemies": []}}, "Red2": {"__class__": "BotInfo", "__value__": {"seenBy": ["Blue0"], "flag": null, "name": "Red2", "facingDirection": [0.9123391509056091, -0.4094350337982178], "state": 6, "health": 0, "seenlast": 0.0, "team": "Red", "currentAction": "ShootAtCommand", "position": [68.28890991210938, 25.360763549804688], "visibleEnemies": []}}, "Red1": {"__class__": "BotInfo", "__value__": {"seenBy": ["Blue0"], "flag": null, "name": "Red1", "facingDirection": [-0.9972056150436401, 0.07470673322677612], "state": 4, "health": 0, "seenlast": 0.0, "team": "Red", "currentAction": "AttackCommand", "position": [68.53483581542969, 25.27260398864746], "visibleEnemies": []}}, "Red0": {"__class__": "BotInfo", "__value__": {"seenBy": [], "flag": null, "name": "Red0", "facingDirection": [0.9994280338287354, -0.033820152282714844], "state": 6, "health": 0, "seenlast": 13.370665550231934, "team": "Red", "currentAction": "ShootAtCommand", "position": [34.46906280517578, 24.155515670776367], "visibleEnemies": []}}, "Red4": {"__class__": "BotInfo", "__value__": {"seenBy": ["Blue0"], "flag": null, "name": "Red4", "facingDirection": [0.912505030632019, -0.4090656042098999], "state": 6, "health": 0, "seenlast": 0.0, "team": "Red", "currentAction": "ShootAtCommand", "position": [68.30572509765625, 25.36515998840332], "visibleEnemies": []}}, "Blue1": {"__class__": "BotInfo", "__value__": {"seenBy": [], "flag": "RedFlag", "name": "Blue1", "facingDirection": [0.9242773652076721, -0.3817223310470581], "state": 3, "health": 100.0, "seenlast": null, "team": "Blue", "currentAction": "MoveCommand", "position": [9.723822593688965, 28.638526916503906], "visibleEnemies": []}}, "Blue0": {"__class__": "BotInfo", "__value__": {"seenBy": [], "flag": null, "name": "Blue0", "facingDirection": [-0.9890086054801941, 0.14785832166671753], "state": 1, "health": 100.0, "seenlast": null, "team": "Blue", "currentAction": null, "position": [81.625, 19.375], "visibleEnemies": ["Red2", "Red1", "Red4"]}}, "Blue3": {"__class__": "BotInfo", "__value__": {"seenBy": [], "flag": null, "name": "Blue3", "facingDirection": [-0.9994280338287354, 0.03381979465484619], "state": 1, "health": 0, "seenlast": null, "team": "Blue", "currentAction": null, "position": [48.790069580078125, 23.665205001831055], "visibleEnemies": []}}, "Blue2": {"__class__": "BotInfo", "__value__": {"seenBy": [], "flag": null, "name": "Blue2", "facingDirection": [-0.9112738966941833, 0.411800742149353], "state": 6, "health": 0, "seenlast": null, "team": "Blue", "currentAction": "ShootAtCommand", "position": [57.94633102416992, 32.63374710083008], "visibleEnemies": []}}, "Blue4": {"__class__": "BotInfo", "__value__": {"seenBy": [], "flag": null, "name": "Blue4", "facingDirection": [-0.9575538635253906, 0.2882544994354248], "state": 6, "health": 0, "seenlast": null, "team": "Blue", "currentAction": "ShootAtCommand", "position": [47.545501708984375, 19.977867126464844], "visibleEnemies": []}}}, "match": {"__class__": "MatchInfo", "__value__": {"timeRemaining": 148.42462158203125, "timeToNextRespawn": 13.427755355834961, "combatEvents": [{"__class__": "MatchCombatEvent", "__value__": {"instigator": "Blue3", "time": 14.939663887023926, "type": 1, "subject": "Red3"}}, {"__class__": "MatchCombatEvent", "__value__": {"instigator": "Red2", "time": 16.550338745117188, "type": 1, "subject": "Blue2"}}, {"__class__": "MatchCombatEvent", "__value__": {"instigator": "Red4", "time": 16.550338745117188, "type": 1, "subject": "Blue2"}}, {"__class__": "MatchCombatEvent", "__value__": {"instigator": "Red0", "time": 17.310344696044922, "type": 1, "subject": "Blue4"}}, {"__class__": "MatchCombatEvent", "__value__": {"instigator": "Blue3", "time": 18.036685943603516, "type": 1, "subject": "Red0"}}, {"__class__": "MatchCombatEvent", "__value__": {"instigator": "Red1", "time": 18.201021194458008, "type": 1, "subject": "Blue3"}}, {"__class__": "MatchCombatEvent", "__value__": {"instigator": "Blue0", "time": 28.15752601623535, "type": 1, "subject": "Red4"}}, {"__class__": "MatchCombatEvent", "__value__": {"instigator": "Blue1", "time": 28.15752601623535, "type": 2, "subject": "RedFlag"}}, {"__class__": "MatchCombatEvent", "__value__": {"instigator": "Blue0", "time": 28.616199493408203, "type": 1, "subject": "Red2"}}, {"__class__": "MatchCombatEvent", "__value__": {"instigator": "Blue0", "time": 29.308876037597656, "type": 1, "subject": "Red1"}}], "timePassed": 31.5719051361084, "scores": {"Blue": 0, "Red": 0}}}}}</pre>
+</div>
+</div>
+<div class="section" id="shutdown">
+<h3>1.2.3. Shutdown<a class="headerlink" href="#shutdown" title="Permalink to this headline">¶</a></h3>
+<p>At the end of the game the game server will send a <cite>shutdown</cite> message to the commanders. This can be used to clean up resources, such as closing the commander log file. The format
+for the shutdown command is as follows:
+1. A line containing the string <cite>&lt;shutdown&gt;</cite></p>
+<p>The following is an example tick message:</p>
+<div class="highlight-python"><pre>&lt;shutdown&gt;</pre>
+</div>
+</div>
+</div>
+<div class="section" id="communication-from-the-commander-to-the-game-server">
+<h2>1.3. Communication from the Commander to the Game Server<a class="headerlink" href="#communication-from-the-commander-to-the-game-server" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="commands">
+<h3>1.3.1. Commands<a class="headerlink" href="#commands" title="Permalink to this headline">¶</a></h3>
+<p>Commands are issued by the commander whenever the commander wishes. Commands are formatted as follows:
+1. A line containing the string &#8216;&lt;command&gt;&#8217;
+2. A line containing a JSON serialized command object (one of Defend, Move, Attack, Charge)</p>
+<p>The following are example command messages for each of the supported commands:</p>
+<div class="highlight-python"><pre>&lt;command&gt;
+{"__class__": "Defend", "__value__": {"facingDirection": [-37.625, 5.625], "bot": "Blue0", "description": ""}}</pre>
+</div>
+<div class="highlight-python"><pre>&lt;command&gt;
+{"__class__": "Move", "__value__": {"bot": "Blue1", "target": [3.41611909866333, 14.919763565063477], "description": ""}}</pre>
+</div>
+<div class="highlight-python"><pre>&lt;command&gt;
+{"__class__": "Attack", "__value__": {"lookAt": [6.0, 30.0], "bot": "Blue3", "target": [6.0, 30.0], "description": ""}}</pre>
+</div>
+<div class="highlight-python"><pre>&lt;command&gt;
+{"__class__": "Charge", "__value__": {"bot": "Blue0", "target": [83.60645294189453, 18.423120498657227], "description": ""}}</pre>
+</div>
+</div>
+<div class="section" id="visualizations">
+<h3>1.3.2. Visualizations<a class="headerlink" href="#visualizations" title="Permalink to this headline">¶</a></h3>
+<p>Not yet supported. We will soon be adding the ability to draw debug visualization objects through the network interface.</p>
+</div>
+</div>
+<div class="section" id="json-serialization-description">
+<h2>1.4. JSON Serialization Description<a class="headerlink" href="#json-serialization-description" title="Permalink to this headline">¶</a></h2>
+<p>Below is a description of the JSON format for each of the objects expected to be sent in JSON form. Newline characters are not allowed in the JSON format communications between
+the commanders and the game server as newlines are used to separate top-level objects in messages.</p>
+<p>For information about the semantics of each data member, please refer to the Python API documentation.</p>
+<p>This document describes version 1.0 of the network protocol</p>
+<div class="section" id="serverconnect">
+<h3>1.4.1. ServerConnect<a class="headerlink" href="#serverconnect" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>
+  <span class="s">&quot;__class__&quot;</span><span class="p">:</span> <span class="s">&quot;ServerConnect&quot;</span><span class="p">,</span>
+  <span class="s">&quot;__value__&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s">&quot;protocolVersion&quot;</span><span class="p">:</span> <span class="s">&quot;1.0&quot;</span>                                                <span class="c"># the network protocol version number that this server supports</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="clientconnect">
+<h3>1.4.2. ClientConnect<a class="headerlink" href="#clientconnect" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><pre>{
+  "__class__": "ClientConnect",
+  "__value__": {
+    "commanderName": "MyCommander"                                          # the string name of the commander being run
+    "language": "python",                                                   # the language in which the commander was written
+  }
+};</pre>
+</div>
+</div>
+<div class="section" id="levelinfo">
+<h3>1.4.3. LevelInfo<a class="headerlink" href="#levelinfo" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><pre>{
+  "__class__": "LevelInfo",
+  "__value__": {
+    "width": 88,
+    "height": 50,
+    "blockHeights": [[0, ..., 0], [0, ..., 0], ..., [0, ..., 0]],           # a 'width' list of 'height' lengthed list of integers
+    "teamNames": ["Blue", "Red"],                                           # list of team names
+    "flagSpawnLocations": {                                                 # map of team name to position
+      "Blue": [82.0, 20.0],
+      "Red": [6.0, 30.0]
+    },
+    "flagScoreLocations": {                                                 # map of team name to position
+      "Blue": [82.0, 20.0],
+      "Red": [6.0, 30.0]
+    }
+    "botSpawnAreas": {                                                      # map of team name to min and max positions
+      "Blue": [[79.0, 2.0], [85.0, 9.0]],
+      "Red": [[3.0, 41.0], [9.0, 48.0]]
+    },
+    "FOVangle": 1.5707963267948966,
+    "characterRadius": 0.25,
+    "walkingSpeed": 3.0,
+    "runningSpeed": 6.0,
+    "firingDistance": 15.0,
+  }
+}</pre>
+</div>
+</div>
+<div class="section" id="gameinfo">
+<h3>1.4.4. GameInfo<a class="headerlink" href="#gameinfo" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><pre>{
+  "__class__": "GameInfo",
+  "__value__": {
+    "teams": {                                                              # map of team names to TeamInfo objects
+      "Blue": {"__class__": "TeamInfo", "__value__": ... },
+      "Red": {"__class__": "TeamInfo", "__value__": ... }
+    },
+    "team": "Blue",
+    "enemyTeam": "Red",
+    "flags": {                                                              # map of team names to FlagInfo objects
+      "BlueFlag": {"__class__": "FlagInfo", "__value__": ... },
+      "RedFlag": {"__class__": "FlagInfo", "__value__": ... }
+    },
+    "bots": {                                                               # map of bot names to BotInfo objects
+      "Red0": {"__class__": "BotInfo", "__value__": ... },
+      ...
+      "Blue4": {"__class__": "BotInfo", "__value__": ... }
+    },
+    "match": {"__class__": "MatchInfo", "__value__": ... }                  # MatchInfo object
+  }
+}</pre>
+</div>
+</div>
+<div class="section" id="teaminfo">
+<h3>1.4.5. TeamInfo<a class="headerlink" href="#teaminfo" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>
+  <span class="s">&quot;__class__&quot;</span><span class="p">:</span> <span class="s">&quot;TeamInfo&quot;</span><span class="p">,</span>
+  <span class="s">&quot;__value__&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;Red&quot;</span><span class="p">,</span>
+    <span class="s">&quot;flag&quot;</span><span class="p">:</span> <span class="s">&quot;RedFlag&quot;</span><span class="p">,</span>
+    <span class="s">&quot;members&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s">&quot;Red0&quot;</span><span class="p">,</span> <span class="s">&quot;Red1&quot;</span><span class="p">,</span> <span class="s">&quot;Red2&quot;</span><span class="p">,</span> <span class="s">&quot;Red3&quot;</span><span class="p">,</span> <span class="s">&quot;Red4&quot;</span><span class="p">],</span>                    <span class="c"># list of bot names</span>
+    <span class="s">&quot;flagSpawnLocation&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">6.0</span><span class="p">,</span> <span class="mf">30.0</span><span class="p">],</span>                                       <span class="c"># (may be removed as this is available in LevelInfo)</span>
+    <span class="s">&quot;flagScoreLocation&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">6.0</span><span class="p">,</span> <span class="mf">30.0</span><span class="p">],</span>                                       <span class="c"># (may be removed as this is available in LevelInfo)</span>
+    <span class="s">&quot;botSpawnArea&quot;</span><span class="p">:</span> <span class="p">[[</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">41.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">9.0</span><span class="p">,</span> <span class="mf">48.0</span><span class="p">]]</span>                              <span class="c"># min and max positions (may be removed as this is available in LevelInfo)</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="flaginfo">
+<h3>1.4.6. FlagInfo<a class="headerlink" href="#flaginfo" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>
+  <span class="s">&quot;__class__&quot;</span><span class="p">:</span> <span class="s">&quot;FlagInfo&quot;</span><span class="p">,</span>
+  <span class="s">&quot;__value__&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;BlueFlag&quot;</span><span class="p">,</span>
+    <span class="s">&quot;team&quot;</span><span class="p">:</span> <span class="s">&quot;Blue&quot;</span><span class="p">,</span>
+    <span class="s">&quot;position&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">82.0</span><span class="p">,</span> <span class="mf">20.0</span><span class="p">],</span>
+    <span class="s">&quot;carrier&quot;</span><span class="p">:</span> <span class="s">&quot;Blue0&quot;</span><span class="p">,</span>                                                     <span class="c"># optional bot name, null if the flag is not being carried</span>
+    <span class="s">&quot;respawnTimer&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">7.450580596923828e-09</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="botinfo">
+<h3>1.4.7. BotInfo<a class="headerlink" href="#botinfo" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>
+  <span class="s">&quot;__class__&quot;</span><span class="p">:</span> <span class="s">&quot;BotInfo&quot;</span><span class="p">,</span>
+  <span class="s">&quot;__value__&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;Red3&quot;</span><span class="p">,</span>
+    <span class="s">&quot;team&quot;</span><span class="p">:</span> <span class="s">&quot;Red&quot;</span><span class="p">,</span>
+    <span class="s">&quot;position&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">35.6309928894043</span><span class="p">,</span> <span class="mf">26.81215476989746</span><span class="p">],</span>                      <span class="c"># optional, null if the bot is not visible</span>
+    <span class="s">&quot;facingDirection&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.9375345706939697</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.3478919267654419</span><span class="p">],</span>           <span class="c"># optional, null if the bot is not visible</span>
+    <span class="s">&quot;flag&quot;</span><span class="p">:</span> <span class="s">&quot;BlueFlag&quot;</span><span class="p">,</span>                                                     <span class="c"># optional flag name, null if the bot is not carrying a flag</span>
+    <span class="s">&quot;currentAction&quot;</span><span class="p">:</span> <span class="s">&quot;ShootAtCommand&quot;</span><span class="p">,</span>                                      <span class="c"># optional current action name, null if the bot is not visible (will be removed)</span>
+    <span class="s">&quot;state&quot;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>                                                             <span class="c"># optional current action name, null if the bot is not visible</span>
+                                                                            <span class="c"># values are 0 = unknown, 1 = idle, 2 = defending, 3 = moving, 4 = attacking, 5 = charging, 6 = shooting</span>
+    <span class="s">&quot;health&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>                                                            <span class="c"># optional, null if the bot is not visible</span>
+    <span class="s">&quot;seenlast&quot;</span><span class="p">:</span> <span class="mf">13.370665550231934</span><span class="p">,</span>                                         <span class="c"># time since the object was last seen, null if the object was never seen</span>
+    <span class="s">&quot;visibleEnemies&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s">&quot;Blue0&quot;</span><span class="p">,</span> <span class="s">&quot;Blue1&quot;</span><span class="p">],</span>                                   <span class="c"># list of bot names for bots which this bot can see</span>
+    <span class="s">&quot;seenBy&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s">&quot;Blue0&quot;</span><span class="p">,</span> <span class="s">&quot;Blue1&quot;</span><span class="p">]</span>                                            <span class="c"># list of bot names for bots which can see this bot</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="matchinfo">
+<h3>1.4.8. MatchInfo<a class="headerlink" href="#matchinfo" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>
+  <span class="s">&quot;__class__&quot;</span><span class="p">:</span> <span class="s">&quot;MatchInfo&quot;</span><span class="p">,</span>
+  <span class="s">&quot;__value__&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s">&quot;timeRemaining&quot;</span><span class="p">:</span> <span class="mf">148.42462158203125</span><span class="p">,</span>
+    <span class="s">&quot;timeToNextRespawn&quot;</span><span class="p">:</span> <span class="mf">13.427755355834961</span><span class="p">,</span>
+    <span class="s">&quot;combatEvents&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="s">&quot;__class__&quot;</span><span class="p">:</span> <span class="s">&quot;MatchCombatEvent&quot;</span><span class="p">,</span> <span class="s">&quot;__value__&quot;</span><span class="p">:</span> <span class="o">...</span> <span class="p">}]</span>  <span class="c"># list of MatchCombatEvent objects</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="matchcombatevent">
+<h3>1.4.9. MatchCombatEvent<a class="headerlink" href="#matchcombatevent" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>
+  <span class="s">&quot;__class__&quot;</span><span class="p">:</span> <span class="s">&quot;MatchCombatEvent&quot;</span><span class="p">,</span>
+  <span class="s">&quot;__value__&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s">&quot;type&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>                                                              <span class="c"># values are 0 = none, 1 = bot killed, 2 = flag picked up, 3 = flag dropped (more to be added soon)</span>
+    <span class="s">&quot;instigator&quot;</span><span class="p">:</span> <span class="s">&quot;Blue3&quot;</span><span class="p">,</span>                                                  <span class="c"># optional bot name that caused the event, null if the event was automatic (eg flag reset, bot respawn)</span>
+    <span class="s">&quot;subject&quot;</span><span class="p">:</span> <span class="s">&quot;Red3&quot;</span><span class="p">,</span>                                                      <span class="c"># bot or flag name that was the subject of the event</span>
+    <span class="s">&quot;time&quot;</span><span class="p">:</span> <span class="mf">14.939663887023926</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="defend-command">
+<h3>1.4.10. Defend Command<a class="headerlink" href="#defend-command" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>
+  <span class="s">&quot;__class__&quot;</span><span class="p">:</span> <span class="s">&quot;Defend&quot;</span><span class="p">,</span>
+  <span class="s">&quot;__value__&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s">&quot;bot&quot;</span><span class="p">:</span> <span class="s">&quot;Blue0&quot;</span><span class="p">,</span>
+    <span class="s">&quot;facingDirection&quot;</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mf">37.625</span><span class="p">,</span> <span class="mf">5.625</span><span class="p">],</span>
+    <span class="s">&quot;description&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="move-command">
+<h3>1.4.11. Move Command<a class="headerlink" href="#move-command" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>
+  <span class="s">&quot;__class__&quot;</span><span class="p">:</span> <span class="s">&quot;Move&quot;</span><span class="p">,</span>
+  <span class="s">&quot;__value__&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s">&quot;bot&quot;</span><span class="p">:</span> <span class="s">&quot;Blue1&quot;</span><span class="p">,</span>
+    <span class="s">&quot;target&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">3.41611909866333</span><span class="p">,</span> <span class="mf">14.919763565063477</span><span class="p">],</span>
+    <span class="s">&quot;description&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="attack-command">
+<h3>1.4.12. Attack Command<a class="headerlink" href="#attack-command" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>
+  <span class="s">&quot;__class__&quot;</span><span class="p">:</span> <span class="s">&quot;Attack&quot;</span><span class="p">,</span>
+  <span class="s">&quot;__value__&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s">&quot;bot&quot;</span><span class="p">:</span> <span class="s">&quot;Blue3&quot;</span><span class="p">,</span>
+    <span class="s">&quot;target&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">6.0</span><span class="p">,</span> <span class="mf">30.0</span><span class="p">],</span>
+    <span class="s">&quot;lookAt&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">6.0</span><span class="p">,</span> <span class="mf">30.0</span><span class="p">],</span>                                                  <span class="c"># optional, null if the bot should look in the direction it is moving</span>
+    <span class="s">&quot;description&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="charge-command">
+<h3>1.4.13. Charge Command<a class="headerlink" href="#charge-command" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>
+  <span class="s">&quot;__class__&quot;</span><span class="p">:</span> <span class="s">&quot;Charge&quot;</span><span class="p">,</span>
+  <span class="s">&quot;__value__&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s">&quot;bot&quot;</span><span class="p">:</span> <span class="s">&quot;Blue0&quot;</span><span class="p">,</span>
+    <span class="s">&quot;target&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">83.60645294189453</span><span class="p">,</span> <span class="mf">18.423120498657227</span><span class="p">],</span>
+    <span class="s">&quot;description&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">}}</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">1. Network Data Protocol</a><ul>
+<li><a class="reference internal" href="#connection-handshaking">1.1. Connection Handshaking</a></li>
+<li><a class="reference internal" href="#communication-from-the-game-server-to-the-commander">1.2. Communication from the Game Server to the Commander</a><ul>
+<li><a class="reference internal" href="#initialize">1.2.1. Initialize</a></li>
+<li><a class="reference internal" href="#tick">1.2.2. Tick</a></li>
+<li><a class="reference internal" href="#shutdown">1.2.3. Shutdown</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#communication-from-the-commander-to-the-game-server">1.3. Communication from the Commander to the Game Server</a><ul>
+<li><a class="reference internal" href="#commands">1.3.1. Commands</a></li>
+<li><a class="reference internal" href="#visualizations">1.3.2. Visualizations</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#json-serialization-description">1.4. JSON Serialization Description</a><ul>
+<li><a class="reference internal" href="#serverconnect">1.4.1. ServerConnect</a></li>
+<li><a class="reference internal" href="#clientconnect">1.4.2. ClientConnect</a></li>
+<li><a class="reference internal" href="#levelinfo">1.4.3. LevelInfo</a></li>
+<li><a class="reference internal" href="#gameinfo">1.4.4. GameInfo</a></li>
+<li><a class="reference internal" href="#teaminfo">1.4.5. TeamInfo</a></li>
+<li><a class="reference internal" href="#flaginfo">1.4.6. FlagInfo</a></li>
+<li><a class="reference internal" href="#botinfo">1.4.7. BotInfo</a></li>
+<li><a class="reference internal" href="#matchinfo">1.4.8. MatchInfo</a></li>
+<li><a class="reference internal" href="#matchcombatevent">1.4.9. MatchCombatEvent</a></li>
+<li><a class="reference internal" href="#defend-command">1.4.10. Defend Command</a></li>
+<li><a class="reference internal" href="#move-command">1.4.11. Move Command</a></li>
+<li><a class="reference internal" href="#attack-command">1.4.12. Attack Command</a></li>
+<li><a class="reference internal" href="#charge-command">1.4.13. Charge Command</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Capture The Flag Python API Documentation</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="api.html"
+                        title="next chapter">2. Python API Documentation</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/network.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="api.html" title="2. Python API Documentation"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Capture The Flag Python API Documentation"
+             >previous</a> |</li>
+        <li><a href="index.html">Capture The Flag alpha documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, AiGameDev.com KG.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

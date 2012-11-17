@@ -1,0 +1,161 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>3. Example Python Commanders &mdash; Capture The Flag alpha documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     'alpha',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Capture The Flag alpha documentation" href="index.html" />
+    <link rel="next" title="4. Release Notes" href="changes.html" />
+    <link rel="prev" title="2. Python API Documentation" href="api.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="changes.html" title="4. Release Notes"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="api.html" title="2. Python API Documentation"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Capture The Flag alpha documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-examples">
+<span id="example-python-commanders"></span><h1>3. Example Python Commanders<a class="headerlink" href="#module-examples" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="examples.BalancedCommander">
+<em class="property">class </em><tt class="descclassname">examples.</tt><tt class="descname">BalancedCommander</tt><a class="reference internal" href="_modules/examples.html#BalancedCommander"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#examples.BalancedCommander" title="Permalink to this definition">¶</a></dt>
+<dd><p>An example commander that has one bot attacking, one defending and the rest randomly searching the level for enemies</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="examples.DefenderCommander">
+<em class="property">class </em><tt class="descclassname">examples.</tt><tt class="descname">DefenderCommander</tt><a class="reference internal" href="_modules/examples.html#DefenderCommander"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#examples.DefenderCommander" title="Permalink to this definition">¶</a></dt>
+<dd><p>Leaves everyone to defend the flag except for one lone guy to grab the other team&#8217;s flag.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="examples.GreedyCommander">
+<em class="property">class </em><tt class="descclassname">examples.</tt><tt class="descname">GreedyCommander</tt><a class="reference internal" href="_modules/examples.html#GreedyCommander"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#examples.GreedyCommander" title="Permalink to this definition">¶</a></dt>
+<dd><p>Always sends everyone to the flag of the enemy and the guy carrying the flag back again</p>
+<dl class="method">
+<dt id="examples.GreedyCommander.captured">
+<tt class="descname">captured</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/examples.html#GreedyCommander.captured"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#examples.GreedyCommander.captured" title="Permalink to this definition">¶</a></dt>
+<dd><p>Did this team cature the enemy flag?</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="examples.GreedyCommander.tick">
+<tt class="descname">tick</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/examples.html#GreedyCommander.tick"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#examples.GreedyCommander.tick" title="Permalink to this definition">¶</a></dt>
+<dd><p>Process the bots that are waiting for orders, either send them all to attack or all to defend.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="examples.RandomCommander">
+<em class="property">class </em><tt class="descclassname">examples.</tt><tt class="descname">RandomCommander</tt><a class="reference internal" href="_modules/examples.html#RandomCommander"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#examples.RandomCommander" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sends everyone to randomized positions or a random choice of flag location.  The behavior of returning the flag
+to the home base after capturing it is purely emergent!</p>
+<dl class="method">
+<dt id="examples.RandomCommander.tick">
+<tt class="descname">tick</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/examples.html#RandomCommander.tick"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#examples.RandomCommander.tick" title="Permalink to this definition">¶</a></dt>
+<dd><p>Process all the bots that are done with their orders and available for taking commands.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="api.html"
+                        title="previous chapter">2. Python API Documentation</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="changes.html"
+                        title="next chapter">4. Release Notes</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/examples.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="changes.html" title="4. Release Notes"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="api.html" title="2. Python API Documentation"
+             >previous</a> |</li>
+        <li><a href="index.html">Capture The Flag alpha documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, AiGameDev.com KG.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

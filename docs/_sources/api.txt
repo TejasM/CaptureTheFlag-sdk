@@ -1,0 +1,18 @@
+Python API Documentation
+========================
+
+Commander
+---------
+.. automodule:: api.commander
+    :members:
+
+Game Info
+---------
+.. automodule:: api.gameinfo
+    :members:
+
+Commands
+--------
+.. automodule:: api.commands
+    :members:
+

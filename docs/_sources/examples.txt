@@ -1,0 +1,6 @@
+Example Python Commanders
+=========================
+
+.. automodule:: examples
+    :members:
+

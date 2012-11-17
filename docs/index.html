@@ -1,0 +1,187 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Capture The Flag Python API Documentation &mdash; Capture The Flag alpha documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     'alpha',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Capture The Flag alpha documentation" href="#" />
+    <link rel="next" title="1. Network Data Protocol" href="network.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="network.html" title="1. Network Data Protocol"
+             accesskey="N">next</a> |</li>
+        <li><a href="#">Capture The Flag alpha documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="capture-the-flag-python-api-documentation">
+<h1>Capture The Flag Python API Documentation<a class="headerlink" href="#capture-the-flag-python-api-documentation" title="Permalink to this headline">¶</a></h1>
+<p>This page contains the API documentation for the Capture The Flag Python Starter Kit.</p>
+<p>For more information on The AI Sandbox and the Capture The Flag Competition visit <a class="reference external" href="http://aisandbox.com">aisandbox.com</a>. There you will find step by step guides to writing your own commander, the latest API documentation and information on how to submit your commander into the competition.</p>
+<div class="section" id="table-of-contents">
+<h2>Table of Contents<a class="headerlink" href="#table-of-contents" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="network.html">1. Network Data Protocol</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="network.html#connection-handshaking">1.1. Connection Handshaking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="network.html#communication-from-the-game-server-to-the-commander">1.2. Communication from the Game Server to the Commander</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="network.html#initialize">1.2.1. Initialize</a></li>
+<li class="toctree-l3"><a class="reference internal" href="network.html#tick">1.2.2. Tick</a></li>
+<li class="toctree-l3"><a class="reference internal" href="network.html#shutdown">1.2.3. Shutdown</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="network.html#communication-from-the-commander-to-the-game-server">1.3. Communication from the Commander to the Game Server</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="network.html#commands">1.3.1. Commands</a></li>
+<li class="toctree-l3"><a class="reference internal" href="network.html#visualizations">1.3.2. Visualizations</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="network.html#json-serialization-description">1.4. JSON Serialization Description</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="network.html#serverconnect">1.4.1. ServerConnect</a></li>
+<li class="toctree-l3"><a class="reference internal" href="network.html#clientconnect">1.4.2. ClientConnect</a></li>
+<li class="toctree-l3"><a class="reference internal" href="network.html#levelinfo">1.4.3. LevelInfo</a></li>
+<li class="toctree-l3"><a class="reference internal" href="network.html#gameinfo">1.4.4. GameInfo</a></li>
+<li class="toctree-l3"><a class="reference internal" href="network.html#teaminfo">1.4.5. TeamInfo</a></li>
+<li class="toctree-l3"><a class="reference internal" href="network.html#flaginfo">1.4.6. FlagInfo</a></li>
+<li class="toctree-l3"><a class="reference internal" href="network.html#botinfo">1.4.7. BotInfo</a></li>
+<li class="toctree-l3"><a class="reference internal" href="network.html#matchinfo">1.4.8. MatchInfo</a></li>
+<li class="toctree-l3"><a class="reference internal" href="network.html#matchcombatevent">1.4.9. MatchCombatEvent</a></li>
+<li class="toctree-l3"><a class="reference internal" href="network.html#defend-command">1.4.10. Defend Command</a></li>
+<li class="toctree-l3"><a class="reference internal" href="network.html#move-command">1.4.11. Move Command</a></li>
+<li class="toctree-l3"><a class="reference internal" href="network.html#attack-command">1.4.12. Attack Command</a></li>
+<li class="toctree-l3"><a class="reference internal" href="network.html#charge-command">1.4.13. Charge Command</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">2. Python API Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api.html#module-api.commander">2.1. Commander</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#module-api.gameinfo">2.2. Game Info</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#module-api.commands">2.3. Commands</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">3. Example Python Commanders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">4. Release Notes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="changes.html#ai-sandbox">4.1. AI Sandbox</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="changes.html#ai-sandbox-0-20-1">4.1.1. AI Sandbox 0.20.1</a></li>
+<li class="toctree-l3"><a class="reference internal" href="changes.html#ai-sandbox-0-20-0">4.1.2. AI Sandbox 0.20.0</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="changes.html#capture-the-flag-sdk">4.2. Capture The Flag SDK</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="changes.html#capture-the-flag-sdk-1-1">4.2.1. Capture The Flag SDK 1.1</a></li>
+<li class="toctree-l3"><a class="reference internal" href="changes.html#capture-the-flag-sdk-1-0">4.2.2. Capture The Flag SDK 1.0</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="index-and-search">
+<h2>Index and Search<a class="headerlink" href="#index-and-search" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><em>Index</em></a></li>
+<li><a class="reference internal" href="py-modindex.html"><em>Module Index</em></a></li>
+<li><a class="reference internal" href="search.html"><em>Search Page</em></a></li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="#">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Capture The Flag Python API Documentation</a><ul>
+<li><a class="reference internal" href="#table-of-contents">Table of Contents</a><ul>
+</ul>
+</li>
+<li><a class="reference internal" href="#index-and-search">Index and Search</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Next topic</h4>
+  <p class="topless"><a href="network.html"
+                        title="next chapter">1. Network Data Protocol</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/index.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="network.html" title="1. Network Data Protocol"
+             >next</a> |</li>
+        <li><a href="#">Capture The Flag alpha documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, AiGameDev.com KG.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

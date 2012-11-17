@@ -1,0 +1,26 @@
+Capture The Flag Python API Documentation
+=========================================
+
+This page contains the API documentation for the Capture The Flag Python Starter Kit.
+
+For more information on The AI Sandbox and the Capture The Flag Competition visit `aisandbox.com <http://aisandbox.com>`_. There you will find step by step guides to writing your own commander, the latest API documentation and information on how to submit your commander into the competition.
+
+Table of Contents
+-----------------
+
+.. toctree::
+   :numbered:
+
+   network.rst
+   api.rst
+   examples.rst
+   changes.rst
+
+
+Index and Search
+----------------
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
+

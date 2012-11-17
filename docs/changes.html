@@ -1,0 +1,170 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>4. Release Notes &mdash; Capture The Flag alpha documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     'alpha',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Capture The Flag alpha documentation" href="index.html" />
+    <link rel="prev" title="3. Example Python Commanders" href="examples.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="examples.html" title="3. Example Python Commanders"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Capture The Flag alpha documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="release-notes">
+<h1>4. Release Notes<a class="headerlink" href="#release-notes" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="ai-sandbox">
+<h2>4.1. AI Sandbox<a class="headerlink" href="#ai-sandbox" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="ai-sandbox-0-20-1">
+<h3>4.1.1. AI Sandbox 0.20.1<a class="headerlink" href="#ai-sandbox-0-20-1" title="Permalink to this headline">¶</a></h3>
+<p><cite>released November 12, 2012</cite></p>
+<ul class="simple">
+<li>Fixed a crash bug between games that was caused by queries being destroyed before they had finished executing.</li>
+<li>Removed the framerate lock imposed on the console only server used in competition.bat. This may be reimposed again in the future.</li>
+</ul>
+</div>
+<div class="section" id="ai-sandbox-0-20-0">
+<h3>4.1.2. AI Sandbox 0.20.0<a class="headerlink" href="#ai-sandbox-0-20-0" title="Permalink to this headline">¶</a></h3>
+<p><cite>released November 7, 2012</cite></p>
+<ul class="simple">
+<li>Initial version</li>
+</ul>
+</div>
+</div>
+<div class="section" id="capture-the-flag-sdk">
+<h2>4.2. Capture The Flag SDK<a class="headerlink" href="#capture-the-flag-sdk" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="capture-the-flag-sdk-1-1">
+<h3>4.2.1. Capture The Flag SDK 1.1<a class="headerlink" href="#capture-the-flag-sdk-1-1" title="Permalink to this headline">¶</a></h3>
+<p><cite>released November 12, 2012</cite></p>
+<ul class="simple">
+<li>Fixed the paths causing the import error in competition.py when run from competition.bat.</li>
+<li>Fixed a problem with import platform.py picking up a file from the standard python installation instead of a local file.</li>
+<li>Removed BotInfo.currentAction (use BotInfo.state instead).</li>
+<li>Fixed initialization of TeamInfo.botSpawnArea.</li>
+<li>Fixed the BotInfo.visibleEnemies and BotInfo.seenLast arrays to contain the correct BotInfo types instead of the internal Character type.</li>
+<li>Clamp target position to world dimensions in LevelInfo.findRandomFreePositionInBox.</li>
+<li>Prevent zombie bot attacks - no longer execute commands on dead bots.</li>
+<li>Call shutdown on each commander at the end of each game.</li>
+<li>Renamed the MyCommander in mycmd.py to PlaceHolderCommander and replaced the tick function&#8217;s use of commands.Stop with commands.Charge.</li>
+<li>Tweaks to the example commanders.</li>
+<li>Added documentation for the network protocol that will be used from the next release. This is to allow support for additional languages.</li>
+</ul>
+</div>
+<div class="section" id="capture-the-flag-sdk-1-0">
+<h3>4.2.2. Capture The Flag SDK 1.0<a class="headerlink" href="#capture-the-flag-sdk-1-0" title="Permalink to this headline">¶</a></h3>
+<p><cite>released November 7, 2012</cite></p>
+<ul class="simple">
+<li>Initial version</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">4. Release Notes</a><ul>
+<li><a class="reference internal" href="#ai-sandbox">4.1. AI Sandbox</a><ul>
+<li><a class="reference internal" href="#ai-sandbox-0-20-1">4.1.1. AI Sandbox 0.20.1</a></li>
+<li><a class="reference internal" href="#ai-sandbox-0-20-0">4.1.2. AI Sandbox 0.20.0</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#capture-the-flag-sdk">4.2. Capture The Flag SDK</a><ul>
+<li><a class="reference internal" href="#capture-the-flag-sdk-1-1">4.2.1. Capture The Flag SDK 1.1</a></li>
+<li><a class="reference internal" href="#capture-the-flag-sdk-1-0">4.2.2. Capture The Flag SDK 1.0</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="examples.html"
+                        title="previous chapter">3. Example Python Commanders</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/changes.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="examples.html" title="3. Example Python Commanders"
+             >previous</a> |</li>
+        <li><a href="index.html">Capture The Flag alpha documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, AiGameDev.com KG.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

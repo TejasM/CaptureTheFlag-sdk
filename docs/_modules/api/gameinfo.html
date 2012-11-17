@@ -1,0 +1,693 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>api.gameinfo &mdash; Capture The Flag alpha documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     'alpha',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="Capture The Flag alpha documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Capture The Flag alpha documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for api.gameinfo</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">random</span>
+
+<span class="kn">from</span> <span class="nn">aigd</span> <span class="kn">import</span> <span class="n">Vector2</span>
+
+<div class="viewcode-block" id="LevelInfo"><a class="viewcode-back" href="../../api.html#api.gameinfo.LevelInfo">[docs]</a><span class="k">class</span> <span class="nc">LevelInfo</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Provides information about the level the game is played in.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="mi">0</span>                                     
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The width of world grid</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="mi">0</span>                                    
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The height of world grid</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">blockHeights</span> <span class="o">=</span> <span class="p">[[]]</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        2d list describing the size of block at each position in world, 0 if there is no block at this position</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">teamNames</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A list of the team names supported by this level.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flagSpawnLocations</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Map of team name the spawn location (Vector2) of the team&#39;s flag</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flagScoreLocations</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Map of team name the location (Vector2) the flag must be taken to score</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">botSpawnAreas</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Map of team name the extents (Vector2, Vector2) of each team&#39;s bot spawn area</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">characterRadius</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The radius of the character</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">FOVangle</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The visibility angle of the bots</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">firingDistance</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The maximum firing distance of the bots</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">walkingSpeed</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The walking speed of the bots</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">runningSpeed</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The running speed of the bots</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="LevelInfo.findRandomFreePositionInBox"><a class="viewcode-back" href="../../api.html#api.gameinfo.LevelInfo.findRandomFreePositionInBox">[docs]</a>    <span class="k">def</span> <span class="nf">findRandomFreePositionInBox</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">area</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Find a random position for a character to move to in an area.</span>
+<span class="sd">        None is returned if no position could be found.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">area</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">area</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">area</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">x</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">area</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
+        <span class="n">area</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">area</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">area</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">x</span><span class="p">),</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">area</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
+
+        <span class="n">minX</span><span class="p">,</span> <span class="n">minY</span> <span class="o">=</span> <span class="n">area</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">area</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">y</span>
+        <span class="n">rangeX</span><span class="p">,</span> <span class="n">rangeY</span> <span class="o">=</span> <span class="n">area</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">x</span> <span class="o">-</span> <span class="n">area</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">area</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">y</span> <span class="o">-</span> <span class="n">area</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">y</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">):</span>
+            <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="n">rangeX</span> <span class="o">+</span> <span class="n">minX</span><span class="p">,</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="n">rangeY</span> <span class="o">+</span> <span class="n">minY</span>
+            <span class="n">ix</span><span class="p">,</span> <span class="n">iy</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+            <span class="c"># check if there are any blocks under current position</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">blockHeights</span><span class="p">[</span><span class="n">ix</span><span class="p">][</span><span class="n">iy</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="c"># check if there are any blocks in the four cardinal directions</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">ix</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">characterRadius</span> <span class="ow">and</span> <span class="n">ix</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">blockHeights</span><span class="p">[</span><span class="n">ix</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="n">iy</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">ix</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">x</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">characterRadius</span> <span class="ow">and</span> <span class="n">ix</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">-</span> <span class="mi">1</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">blockHeights</span><span class="p">[</span><span class="n">ix</span><span class="o">+</span><span class="mi">1</span><span class="p">][</span><span class="n">iy</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">y</span> <span class="o">-</span> <span class="n">iy</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">characterRadius</span> <span class="ow">and</span> <span class="n">iy</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">blockHeights</span><span class="p">[</span><span class="n">ix</span><span class="p">][</span><span class="n">iy</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">iy</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">characterRadius</span> <span class="ow">and</span> <span class="n">iy</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">-</span> <span class="mi">1</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">blockHeights</span><span class="p">[</span><span class="n">ix</span><span class="p">][</span><span class="n">iy</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="c"># check if there are any blocks in the four diagonals</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">ix</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">characterRadius</span> <span class="ow">and</span> <span class="p">(</span><span class="n">y</span> <span class="o">-</span> <span class="n">iy</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">characterRadius</span> <span class="ow">and</span> <span class="n">ix</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">iy</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">blockHeights</span><span class="p">[</span><span class="n">ix</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="n">iy</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">ix</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">x</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">characterRadius</span> <span class="ow">and</span> <span class="p">(</span><span class="n">y</span> <span class="o">-</span> <span class="n">iy</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">characterRadius</span> <span class="ow">and</span> <span class="n">ix</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">-</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">iy</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">blockHeights</span><span class="p">[</span><span class="n">ix</span><span class="o">+</span><span class="mi">1</span><span class="p">][</span><span class="n">iy</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">ix</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">characterRadius</span> <span class="ow">and</span> <span class="p">(</span><span class="n">iy</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">characterRadius</span> <span class="ow">and</span> <span class="n">ix</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">iy</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">-</span> <span class="mi">1</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">blockHeights</span><span class="p">[</span><span class="n">ix</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="n">iy</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">ix</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">characterRadius</span> <span class="ow">and</span> <span class="p">(</span><span class="n">iy</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">characterRadius</span> <span class="ow">and</span> <span class="n">ix</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">-</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">iy</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">-</span> <span class="mi">1</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">blockHeights</span><span class="p">[</span><span class="n">ix</span><span class="o">+</span><span class="mi">1</span><span class="p">][</span><span class="n">iy</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">return</span> <span class="n">Vector2</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">None</span>
+</div>
+<div class="viewcode-block" id="LevelInfo.findNearestFreePosition"><a class="viewcode-back" href="../../api.html#api.gameinfo.LevelInfo.findNearestFreePosition">[docs]</a>    <span class="k">def</span> <span class="nf">findNearestFreePosition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Find a free position near &#39;target&#39; for a character to move to.</span>
+<span class="sd">        None is returned if no position could be found.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">):</span>
+            <span class="n">areaMin</span> <span class="o">=</span> <span class="n">Vector2</span><span class="p">(</span><span class="n">target</span><span class="o">.</span><span class="n">x</span> <span class="o">-</span> <span class="n">r</span><span class="p">,</span> <span class="n">target</span><span class="o">.</span><span class="n">y</span> <span class="o">-</span> <span class="n">r</span><span class="p">)</span>
+            <span class="n">areaMax</span> <span class="o">=</span> <span class="n">Vector2</span><span class="p">(</span><span class="n">target</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">r</span><span class="p">,</span> <span class="n">target</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="n">r</span><span class="p">)</span> 
+            <span class="n">position</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">findRandomFreePositionInBox</span><span class="p">((</span><span class="n">areaMin</span><span class="p">,</span> <span class="n">areaMax</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">position</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">position</span>
+        <span class="k">return</span> <span class="bp">None</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="LevelInfo.area"><a class="viewcode-back" href="../../api.html#api.gameinfo.LevelInfo.area">[docs]</a>    <span class="k">def</span> <span class="nf">area</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the full area of the world.</span>
+<span class="sd">        This can be used with findRandomFreePositionInBox to find a random position in the world.</span>
+<span class="sd">        eg levelInfo.findRandomFreePositionInBox(levelInfo.area)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">Vector2</span><span class="o">.</span><span class="n">ZERO</span><span class="p">,</span> <span class="n">Vector2</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">))</span>
+
+</div>
+    <span class="nd">@classmethod</span> 
+    <span class="k">def</span> <span class="nf">createFromWorldBuilder</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">world</span><span class="p">,</span> <span class="n">worldBuilder</span><span class="p">,</span> <span class="n">levelConfig</span><span class="p">):</span> 
+        <span class="n">levelInfo</span> <span class="o">=</span> <span class="n">LevelInfo</span><span class="p">()</span>
+
+        <span class="n">worldBounds</span> <span class="o">=</span> <span class="n">world</span><span class="o">.</span><span class="n">getBounds</span><span class="p">()</span><span class="o">.</span><span class="n">getMaximum</span><span class="p">()</span>
+        <span class="n">levelInfo</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="n">levelInfo</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">worldBounds</span><span class="o">.</span><span class="n">x</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">worldBounds</span><span class="o">.</span><span class="n">z</span><span class="p">)</span>
+        <span class="n">levelInfo</span><span class="o">.</span><span class="n">blockHeights</span> <span class="o">=</span> <span class="p">[</span> <span class="p">[</span><span class="n">worldBuilder</span><span class="o">.</span><span class="n">getAltitude</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">levelInfo</span><span class="o">.</span><span class="n">height</span><span class="p">)]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">levelInfo</span><span class="o">.</span><span class="n">width</span><span class="p">)]</span>     
+
+        <span class="n">levelInfo</span><span class="o">.</span><span class="n">teamNames</span> <span class="o">=</span> <span class="n">levelConfig</span><span class="o">.</span><span class="n">teamConfigs</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="n">levelInfo</span><span class="o">.</span><span class="n">flagSpawnLocations</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">levelInfo</span><span class="o">.</span><span class="n">flagScoreLocations</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">levelInfo</span><span class="o">.</span><span class="n">botSpawnAreas</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">teamName</span><span class="p">,</span> <span class="n">teamConfig</span><span class="p">)</span> <span class="ow">in</span> <span class="n">levelConfig</span><span class="o">.</span><span class="n">teamConfigs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="c"># print teamName, &quot; flag:&quot;, teamConfig.flagSpawnLocation.x, teamConfig.flagSpawnLocation.y, &quot; score:&quot;, teamConfig.flagScoreLocation.x, teamConfig.flagScoreLocation</span>
+            <span class="n">levelInfo</span><span class="o">.</span><span class="n">flagSpawnLocations</span><span class="p">[</span><span class="n">teamName</span><span class="p">]</span> <span class="o">=</span> <span class="n">teamConfig</span><span class="o">.</span><span class="n">flagSpawnLocation</span>
+            <span class="n">levelInfo</span><span class="o">.</span><span class="n">flagScoreLocations</span><span class="p">[</span><span class="n">teamName</span><span class="p">]</span> <span class="o">=</span> <span class="n">teamConfig</span><span class="o">.</span><span class="n">flagScoreLocation</span>
+            <span class="n">levelInfo</span><span class="o">.</span><span class="n">botSpawnAreas</span><span class="p">[</span><span class="n">teamName</span><span class="p">]</span> <span class="o">=</span> <span class="n">teamConfig</span><span class="o">.</span><span class="n">botSpawnArea</span>
+
+        <span class="k">return</span> <span class="n">levelInfo</span>
+
+
+</div>
+<div class="viewcode-block" id="GameInfo"><a class="viewcode-back" href="../../api.html#api.gameinfo.GameInfo">[docs]</a><span class="k">class</span> <span class="nc">GameInfo</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    All of the filtered read-only information about the current game state.</span>
+<span class="sd">    This shouldn&#39;t be modified. Modifying it will only hurt yourself.</span>
+<span class="sd">    Updated each frame to show the current known information about the world.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">match</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The MatchInfo object describing the current match</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">teams</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The dictionary containing the TeamInfo object for each team indexed by team name</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">team</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The TeamInfo object describing your team</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">enemyTeam</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The TeamInfo object describing the enemy team</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bots</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The dictionary containing the BotInfo object for each bot indexed by bot name</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flags</span> <span class="o">=</span> <span class="p">{}</span>        
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The dictionary containing the FlagInfo object for each flag indexed by flag name</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="GameInfo.bots_alive"><a class="viewcode-back" href="../../api.html#api.gameinfo.GameInfo.bots_alive">[docs]</a>    <span class="k">def</span> <span class="nf">bots_alive</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The list of all bots in this team that are currently alive.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">b</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">team</span><span class="o">.</span><span class="n">members</span> <span class="k">if</span> <span class="n">b</span><span class="o">.</span><span class="n">health</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="GameInfo.bots_available"><a class="viewcode-back" href="../../api.html#api.gameinfo.GameInfo.bots_available">[docs]</a>    <span class="k">def</span> <span class="nf">bots_available</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The list of all bots in this team that are currently alive and not doing an action.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">b</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bots_alive</span> <span class="k">if</span> <span class="n">b</span><span class="o">.</span><span class="n">currentAction</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">]</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="GameInfo.enemyFlags"><a class="viewcode-back" href="../../api.html#api.gameinfo.GameInfo.enemyFlags">[docs]</a>    <span class="k">def</span> <span class="nf">enemyFlags</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a list of FlagInfo objects for all enemy flags. Set up to support more than one enemy team </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">team</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">team</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+</div>
+    <span class="k">def</span> <span class="nf">addTeam</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">team</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">teams</span><span class="p">[</span><span class="n">team</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">team</span>
+        <span class="k">for</span> <span class="n">bot</span> <span class="ow">in</span> <span class="n">team</span><span class="o">.</span><span class="n">members</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bots</span><span class="p">[</span><span class="n">bot</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">bot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flags</span><span class="p">[</span><span class="n">team</span><span class="o">.</span><span class="n">flag</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">team</span><span class="o">.</span><span class="n">flag</span>
+
+</div>
+<div class="viewcode-block" id="TeamInfo"><a class="viewcode-back" href="../../api.html#api.gameinfo.TeamInfo">[docs]</a><span class="k">class</span> <span class="nc">TeamInfo</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Information about the current team including ids of all of the members of the team</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The name of the team</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">members</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A list of the BotInfo objects for each member of the team</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flag</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The FlagInfo object for this team&#39;s flag.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flagScoreLocation</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The position (Vector2) where the team must return an enemy flag to score a point.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flagSpawnLocation</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The position (Vector2) where this team&#39;s flag is spawned.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">botSpawnArea</span> <span class="o">=</span> <span class="p">(</span><span class="n">Vector2</span><span class="o">.</span><span class="n">ZERO</span><span class="p">,</span> <span class="n">Vector2</span><span class="o">.</span><span class="n">ZERO</span><span class="p">)</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The (min, max) extents (Vector2, Vector2) of each team&#39;s bot spawn area</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+</div>
+<div class="viewcode-block" id="FlagInfo"><a class="viewcode-back" href="../../api.html#api.gameinfo.FlagInfo">[docs]</a><span class="k">class</span> <span class="nc">FlagInfo</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Information about each of the flags.</span>
+<span class="sd">    The positions of all flags are always known.</span>
+<span class="sd">    If a flag is being carried the carrier is always known</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        name                The name of the flag</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">team</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        team                The team that owns this flag.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="n">Vector2</span><span class="o">.</span><span class="n">ZERO</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        position            The current position of the flag (always known)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">carrier</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        carrier             The BotInfo object for the bot that is currently carrying the flag (None if it is not being carried)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">respawnTimer</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        respawnTimer        Time in seconds until a dropped flag is respawned at its spawn location</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+</div>
+<div class="viewcode-block" id="BotInfo"><a class="viewcode-back" href="../../api.html#api.gameinfo.BotInfo">[docs]</a><span class="k">class</span> <span class="nc">BotInfo</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Information that you know about each of the bots.</span>
+<span class="sd">    Enemy bots will contain information about the last time they were seen.</span>
+<span class="sd">    Friendly bots will contain full information.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">STATE_UNKNOWN</span>   <span class="o">=</span>  <span class="mi">0</span>
+    <span class="n">STATE_IDLE</span>      <span class="o">=</span>  <span class="mi">1</span>
+    <span class="n">STATE_DEFENDING</span> <span class="o">=</span>  <span class="mi">2</span>
+    <span class="n">STATE_MOVING</span>    <span class="o">=</span>  <span class="mi">3</span>
+    <span class="n">STATE_ATTACKING</span> <span class="o">=</span>  <span class="mi">4</span>
+    <span class="n">STATE_CHARGING</span>  <span class="o">=</span>  <span class="mi">5</span>
+    <span class="n">STATE_SHOOTING</span>  <span class="o">=</span>  <span class="mi">6</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The name of this bot</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The name of this bot</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">team</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The TeamInfo for the team that owns this bot</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">health</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The current health of a bot. For unseen enemy bots this is the health that you last saw them.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">currentAction</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The current action of a bot (string) (None for unseen enemy bots).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">BotInfo</span><span class="o">.</span><span class="n">STATE_UNKNOWN</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The last known state of this bots for enemies, STATE_UNKNOWN for bots that you have never seen. The possible states of an enemy bot: `STATE_UNKNOWN`, `STATE_IDLE`, `STATE_DEFENDING`, `STATE_MOVING`, `STATE_ATTACKING`, `STATE_CHARGING`, `STATE_SHOOTING`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The last known position (Vector2) of the bot, None for bots that you have never seen. </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">facingDirection</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The last known movement direction (Vector2) of the bot, None for bots that you have never seen</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">seenlast</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The time since this bot was last seen, None for bots that you have never seen</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flag</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The flag being carried by the bot, None if no flag is carried. This is always known for enemy bots.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">visibleEnemies</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        List of BotInfo objects for enemies which are visible to this bot</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">seenBy</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        List of BotInfo objects for enemies which are visible by the team and can see this bot</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+</div>
+<div class="viewcode-block" id="MatchInfo"><a class="viewcode-back" href="../../api.html#api.gameinfo.MatchInfo">[docs]</a><span class="k">class</span> <span class="nc">MatchInfo</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Information about the current match.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scores</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A dictionary of team name to score</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timeRemaining</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Time in seconds until this match ends</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timeToNextRespawn</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Time in seconds until the next bot respawn cycle</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timePassed</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Time in seconds since the beginning of this match</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">combatEvents</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        List of combat events that have occurred during this match.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+</div>
+<div class="viewcode-block" id="MatchCombatEvent"><a class="viewcode-back" href="../../api.html#api.gameinfo.MatchCombatEvent">[docs]</a><span class="k">class</span> <span class="nc">MatchCombatEvent</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Information about the current match.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">TYPE_NONE</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">TYPE_KILLED</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">TYPE_FLAG_PICKEDUP</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">TYPE_FLAG_DROPPED</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="n">TYPE_FLAG_CAPTURED</span> <span class="o">=</span> <span class="mi">4</span>
+        
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">subject</span><span class="p">,</span> <span class="n">instigator</span><span class="p">,</span> <span class="n">time</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="nb">type</span>                          
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The type of event (`TYPE_NONE`, `TYPE_KILLED`, `TYPE_FLAG_PICKEDUP`, `TYPE_FLAG_DROPPED`, `TYPE_FLAG_CAPTURED`)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subject</span> <span class="o">=</span> <span class="n">subject</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The name of the flag/bot that this event is about</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">instigator</span> <span class="o">=</span> <span class="n">instigator</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The name of the bot which instigated this event</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">time</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Time in seconds since the beginning of this match that this event occurred.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+
+</div>
+<span class="k">def</span> <span class="nf">toJSON</span><span class="p">(</span><span class="n">python_object</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">python_object</span><span class="p">,</span> <span class="n">Vector2</span><span class="p">):</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">python_object</span>
+        <span class="k">return</span> <span class="p">[</span><span class="nb">round</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="nb">round</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="mi">2</span><span class="p">)]</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">python_object</span><span class="p">,</span> <span class="n">LevelInfo</span><span class="p">):</span>
+        <span class="n">level</span> <span class="o">=</span> <span class="n">python_object</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s">&#39;__class__&#39;</span><span class="p">:</span> <span class="s">&#39;LevelInfo&#39;</span><span class="p">,</span>
+                <span class="s">&#39;__value__&#39;</span><span class="p">:</span> <span class="p">{</span> <span class="s">&#39;width&#39;</span><span class="p">:</span> <span class="n">level</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="s">&#39;height&#39;</span><span class="p">:</span> <span class="n">level</span><span class="o">.</span><span class="n">height</span><span class="p">,</span> <span class="s">&#39;blockHeights&#39;</span><span class="p">:</span> <span class="n">level</span><span class="o">.</span><span class="n">blockHeights</span><span class="p">,</span> <span class="s">&#39;teamNames&#39;</span><span class="p">:</span> <span class="n">level</span><span class="o">.</span><span class="n">teamNames</span><span class="p">,</span>
+                               <span class="s">&#39;flagSpawnLocations&#39;</span><span class="p">:</span> <span class="n">level</span><span class="o">.</span><span class="n">flagSpawnLocations</span><span class="p">,</span> <span class="s">&#39;flagScoreLocations&#39;</span><span class="p">:</span> <span class="n">level</span><span class="o">.</span><span class="n">flagScoreLocations</span><span class="p">,</span> <span class="s">&#39;botSpawnAreas&#39;</span><span class="p">:</span> <span class="n">level</span><span class="o">.</span><span class="n">botSpawnAreas</span><span class="p">,</span>
+                               <span class="s">&#39;characterRadius&#39;</span><span class="p">:</span> <span class="n">level</span><span class="o">.</span><span class="n">characterRadius</span><span class="p">,</span> <span class="s">&#39;FOVangle&#39;</span><span class="p">:</span> <span class="n">level</span><span class="o">.</span><span class="n">FOVangle</span><span class="p">,</span> <span class="s">&#39;firingDistance&#39;</span><span class="p">:</span> <span class="n">level</span><span class="o">.</span><span class="n">firingDistance</span><span class="p">,</span> <span class="s">&#39;walkingSpeed&#39;</span><span class="p">:</span> <span class="n">level</span><span class="o">.</span><span class="n">walkingSpeed</span><span class="p">,</span> <span class="s">&#39;runningSpeed&#39;</span><span class="p">:</span> <span class="n">level</span><span class="o">.</span><span class="n">runningSpeed</span>  <span class="p">}}</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">python_object</span><span class="p">,</span> <span class="n">GameInfo</span><span class="p">):</span>
+        <span class="n">game</span> <span class="o">=</span> <span class="n">python_object</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s">&#39;__class__&#39;</span><span class="p">:</span> <span class="s">&#39;GameInfo&#39;</span><span class="p">,</span>
+                <span class="s">&#39;__value__&#39;</span><span class="p">:</span> <span class="p">{</span> <span class="s">&#39;match&#39;</span><span class="p">:</span> <span class="n">game</span><span class="o">.</span><span class="n">match</span><span class="p">,</span> <span class="s">&#39;team&#39;</span><span class="p">:</span> <span class="n">game</span><span class="o">.</span><span class="n">team</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s">&#39;enemyTeam&#39;</span><span class="p">:</span> <span class="n">game</span><span class="o">.</span><span class="n">enemyTeam</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                               <span class="s">&#39;teams&#39;</span><span class="p">:</span> <span class="n">game</span><span class="o">.</span><span class="n">teams</span><span class="p">,</span> <span class="s">&#39;flags&#39;</span><span class="p">:</span> <span class="n">game</span><span class="o">.</span><span class="n">flags</span> <span class="p">,</span> <span class="s">&#39;bots&#39;</span><span class="p">:</span> <span class="n">game</span><span class="o">.</span><span class="n">bots</span> <span class="p">}}</span>
+       
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">python_object</span><span class="p">,</span> <span class="n">TeamInfo</span><span class="p">):</span>
+        <span class="n">team</span> <span class="o">=</span> <span class="n">python_object</span>
+        <span class="n">members</span> <span class="o">=</span> <span class="p">[</span><span class="n">b</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">team</span><span class="o">.</span><span class="n">members</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s">&#39;__class__&#39;</span><span class="p">:</span> <span class="s">&#39;TeamInfo&#39;</span><span class="p">,</span>
+                <span class="s">&#39;__value__&#39;</span><span class="p">:</span> <span class="p">{</span> <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="n">team</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s">&#39;members&#39;</span><span class="p">:</span> <span class="n">members</span><span class="p">,</span> <span class="s">&#39;flag&#39;</span><span class="p">:</span> <span class="n">team</span><span class="o">.</span><span class="n">flag</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                               <span class="s">&#39;flagScoreLocation&#39;</span><span class="p">:</span> <span class="n">team</span><span class="o">.</span><span class="n">flagScoreLocation</span><span class="p">,</span> <span class="s">&#39;flagSpawnLocation&#39;</span><span class="p">:</span> <span class="n">team</span><span class="o">.</span><span class="n">flagSpawnLocation</span><span class="p">,</span> <span class="s">&#39;botSpawnArea&#39;</span><span class="p">:</span> <span class="n">team</span><span class="o">.</span><span class="n">botSpawnArea</span> <span class="p">}}</span>   
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">python_object</span><span class="p">,</span> <span class="n">FlagInfo</span><span class="p">):</span>
+        <span class="n">flag</span> <span class="o">=</span> <span class="n">python_object</span>
+        <span class="n">carrierName</span> <span class="o">=</span> <span class="n">flag</span><span class="o">.</span><span class="n">carrier</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="n">flag</span><span class="o">.</span><span class="n">carrier</span> <span class="k">else</span> <span class="bp">None</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s">&#39;__class__&#39;</span><span class="p">:</span> <span class="s">&#39;FlagInfo&#39;</span><span class="p">,</span>
+                <span class="s">&#39;__value__&#39;</span><span class="p">:</span> <span class="p">{</span> <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="n">flag</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s">&#39;position&#39;</span><span class="p">:</span> <span class="n">flag</span><span class="o">.</span><span class="n">position</span><span class="p">,</span> <span class="s">&#39;team&#39;</span><span class="p">:</span> <span class="n">flag</span><span class="o">.</span><span class="n">team</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s">&#39;carrier&#39;</span><span class="p">:</span> <span class="n">carrierName</span><span class="p">,</span> <span class="s">&#39;respawnTimer&#39;</span><span class="p">:</span> <span class="n">flag</span><span class="o">.</span><span class="n">respawnTimer</span> <span class="p">}}</span>   
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">python_object</span><span class="p">,</span> <span class="n">BotInfo</span><span class="p">):</span>
+        <span class="n">bot</span> <span class="o">=</span> <span class="n">python_object</span>
+        <span class="n">currentAction</span> <span class="o">=</span> <span class="n">bot</span><span class="o">.</span><span class="n">currentAction</span> <span class="k">if</span> <span class="n">bot</span><span class="o">.</span><span class="n">currentAction</span> <span class="k">else</span> <span class="bp">None</span>
+        <span class="n">flag</span> <span class="o">=</span> <span class="n">flag</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="n">bot</span><span class="o">.</span><span class="n">flag</span> <span class="k">else</span> <span class="bp">None</span>
+        <span class="n">visibleEnemies</span> <span class="o">=</span> <span class="p">[</span><span class="n">b</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">bot</span><span class="o">.</span><span class="n">visibleEnemies</span><span class="p">]</span>
+        <span class="n">seenBy</span> <span class="o">=</span> <span class="p">[</span><span class="n">b</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">bot</span><span class="o">.</span><span class="n">seenBy</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s">&#39;__class__&#39;</span><span class="p">:</span> <span class="s">&#39;BotInfo&#39;</span><span class="p">,</span>
+                <span class="s">&#39;__value__&#39;</span><span class="p">:</span> <span class="p">{</span> <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="n">bot</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s">&#39;team&#39;</span><span class="p">:</span> <span class="n">bot</span><span class="o">.</span><span class="n">team</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s">&#39;health&#39;</span><span class="p">:</span> <span class="n">bot</span><span class="o">.</span><span class="n">health</span><span class="p">,</span> <span class="s">&#39;currentAction&#39;</span><span class="p">:</span> <span class="n">currentAction</span> <span class="p">,</span>
+                               <span class="s">&#39;state&#39;</span><span class="p">:</span> <span class="n">bot</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="s">&#39;position&#39;</span><span class="p">:</span> <span class="n">bot</span><span class="o">.</span><span class="n">position</span><span class="p">,</span> <span class="s">&#39;facingDirection&#39;</span><span class="p">:</span> <span class="n">bot</span><span class="o">.</span><span class="n">facingDirection</span> <span class="p">,</span> <span class="s">&#39;seenlast&#39;</span><span class="p">:</span> <span class="n">bot</span><span class="o">.</span><span class="n">seenlast</span><span class="p">,</span>
+                               <span class="s">&#39;flag&#39;</span><span class="p">:</span> <span class="n">flag</span><span class="p">,</span> <span class="s">&#39;visibleEnemies&#39;</span><span class="p">:</span> <span class="n">visibleEnemies</span><span class="p">,</span> <span class="s">&#39;seenBy&#39;</span><span class="p">:</span> <span class="n">seenBy</span> <span class="p">}}</span>   
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">python_object</span><span class="p">,</span> <span class="n">MatchInfo</span><span class="p">):</span>
+        <span class="n">match</span> <span class="o">=</span> <span class="n">python_object</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s">&#39;__class__&#39;</span><span class="p">:</span> <span class="s">&#39;MatchInfo&#39;</span><span class="p">,</span>
+                <span class="s">&#39;__value__&#39;</span><span class="p">:</span> <span class="p">{</span> <span class="s">&#39;scores&#39;</span><span class="p">:</span> <span class="n">match</span><span class="o">.</span><span class="n">scores</span><span class="p">,</span> <span class="s">&#39;timeRemaining&#39;</span><span class="p">:</span> <span class="n">match</span><span class="o">.</span><span class="n">timeRemaining</span><span class="p">,</span> <span class="s">&#39;timeToNextRespawn&#39;</span><span class="p">:</span> <span class="n">match</span><span class="o">.</span><span class="n">timeToNextRespawn</span><span class="p">,</span> <span class="s">&#39;timePassed&#39;</span><span class="p">:</span> <span class="n">match</span><span class="o">.</span><span class="n">timePassed</span><span class="p">,</span> <span class="s">&#39;combatEvents&#39;</span><span class="p">:</span> <span class="n">match</span><span class="o">.</span><span class="n">combatEvents</span> <span class="p">}}</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">python_object</span><span class="p">,</span> <span class="n">MatchCombatEvent</span><span class="p">):</span>
+        <span class="n">combatEvent</span> <span class="o">=</span> <span class="n">python_object</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s">&#39;__class__&#39;</span><span class="p">:</span> <span class="s">&#39;MatchCombatEvent&#39;</span><span class="p">,</span>
+                <span class="s">&#39;__value__&#39;</span><span class="p">:</span> <span class="p">{</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="n">combatEvent</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="s">&#39;subject&#39;</span><span class="p">:</span> <span class="n">combatEvent</span><span class="o">.</span><span class="n">subject</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s">&#39;instigator&#39;</span><span class="p">:</span> <span class="n">combatEvent</span><span class="o">.</span><span class="n">instigator</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s">&#39;time&#39;</span><span class="p">:</span> <span class="n">combatEvent</span><span class="o">.</span><span class="n">time</span> <span class="p">}}</span>
+
+    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">python_object</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39; is not JSON serializable&#39;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">toVector2</span><span class="p">(</span><span class="nb">list</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">list</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">None</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
+    <span class="k">return</span> <span class="n">Vector2</span><span class="p">(</span><span class="nb">list</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">list</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+
+<span class="k">def</span> <span class="nf">fromJSON</span><span class="p">(</span><span class="n">dct</span><span class="p">):</span>
+    <span class="k">if</span> <span class="s">&#39;__class__&#39;</span> <span class="ow">in</span> <span class="n">dct</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">dct</span><span class="p">[</span><span class="s">&#39;__class__&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;LevelInfo&#39;</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">dct</span><span class="p">[</span><span class="s">&#39;__value__&#39;</span><span class="p">]</span>
+            <span class="n">level</span> <span class="o">=</span> <span class="n">LevelInfo</span><span class="p">()</span>
+            <span class="n">level</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s">&#39;width&#39;</span><span class="p">]</span>
+            <span class="n">level</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s">&#39;height&#39;</span><span class="p">]</span>
+            <span class="n">level</span><span class="o">.</span><span class="n">blockHeights</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s">&#39;blockHeights&#39;</span><span class="p">]</span>
+            <span class="n">level</span><span class="o">.</span><span class="n">teamNames</span> <span class="o">=</span> <span class="p">[</span><span class="n">name</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">value</span><span class="p">[</span><span class="s">&#39;teamNames&#39;</span><span class="p">]]</span>
+            <span class="n">level</span><span class="o">.</span><span class="n">flagSpawnLocations</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">teamName</span><span class="p">,</span> <span class="n">flagSpawnLocation</span> <span class="ow">in</span> <span class="n">value</span><span class="p">[</span><span class="s">&#39;flagSpawnLocations&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">level</span><span class="o">.</span><span class="n">flagSpawnLocations</span><span class="p">[</span><span class="n">teamName</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;utf-8&#39;</span><span class="p">)]</span> <span class="o">=</span> <span class="n">toVector2</span><span class="p">(</span><span class="n">flagSpawnLocation</span><span class="p">)</span>
+            <span class="n">level</span><span class="o">.</span><span class="n">flagScoreLocations</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">teamName</span><span class="p">,</span> <span class="n">flagScoreLocation</span> <span class="ow">in</span> <span class="n">value</span><span class="p">[</span><span class="s">&#39;flagScoreLocations&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">level</span><span class="o">.</span><span class="n">flagScoreLocations</span><span class="p">[</span><span class="n">teamName</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;utf-8&#39;</span><span class="p">)]</span> <span class="o">=</span> <span class="n">toVector2</span><span class="p">(</span><span class="n">flagScoreLocation</span><span class="p">)</span>
+            <span class="n">level</span><span class="o">.</span><span class="n">botSpawnAreas</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">teamName</span><span class="p">,</span> <span class="n">teamSpawnArea</span> <span class="ow">in</span> <span class="n">value</span><span class="p">[</span><span class="s">&#39;botSpawnAreas&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">level</span><span class="o">.</span><span class="n">botSpawnAreas</span><span class="p">[</span><span class="n">teamName</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;utf-8&#39;</span><span class="p">)]</span> <span class="o">=</span> <span class="p">(</span><span class="n">toVector2</span><span class="p">(</span><span class="n">teamSpawnArea</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">toVector2</span><span class="p">(</span><span class="n">teamSpawnArea</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+            <span class="n">level</span><span class="o">.</span><span class="n">characterRadius</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s">&#39;characterRadius&#39;</span><span class="p">]</span>
+            <span class="n">level</span><span class="o">.</span><span class="n">FOVangle</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s">&#39;FOVangle&#39;</span><span class="p">]</span>
+            <span class="n">level</span><span class="o">.</span><span class="n">firingDistance</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s">&#39;firingDistance&#39;</span><span class="p">]</span>
+            <span class="n">level</span><span class="o">.</span><span class="n">walkingSpeed</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s">&#39;walkingSpeed&#39;</span><span class="p">]</span>
+            <span class="n">level</span><span class="o">.</span><span class="n">runningSpeed</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s">&#39;runningSpeed&#39;</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">level</span>
+
+        <span class="k">if</span> <span class="n">dct</span><span class="p">[</span><span class="s">&#39;__class__&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;GameInfo&#39;</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">dct</span><span class="p">[</span><span class="s">&#39;__value__&#39;</span><span class="p">]</span>
+            <span class="n">game</span> <span class="o">=</span> <span class="n">GameInfo</span><span class="p">()</span>
+            <span class="n">game</span><span class="o">.</span><span class="n">match</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s">&#39;match&#39;</span><span class="p">]</span>
+            <span class="n">game</span><span class="o">.</span><span class="n">teams</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">team</span> <span class="ow">in</span> <span class="n">value</span><span class="p">[</span><span class="s">&#39;teams&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">game</span><span class="o">.</span><span class="n">teams</span><span class="p">[</span><span class="n">name</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;utf-8&#39;</span><span class="p">)]</span> <span class="o">=</span> <span class="n">team</span>
+            <span class="n">game</span><span class="o">.</span><span class="n">team</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s">&#39;team&#39;</span><span class="p">]</span> <span class="c"># needs fixup</span>
+            <span class="n">game</span><span class="o">.</span><span class="n">enemyTeam</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s">&#39;enemyTeam&#39;</span><span class="p">]</span> <span class="c"># needs fixup</span>
+            <span class="n">game</span><span class="o">.</span><span class="n">bots</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">bot</span> <span class="ow">in</span> <span class="n">value</span><span class="p">[</span><span class="s">&#39;bots&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">game</span><span class="o">.</span><span class="n">bots</span><span class="p">[</span><span class="n">name</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;utf-8&#39;</span><span class="p">)]</span> <span class="o">=</span> <span class="n">bot</span>
+            <span class="n">game</span><span class="o">.</span><span class="n">flags</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">flag</span> <span class="ow">in</span> <span class="n">value</span><span class="p">[</span><span class="s">&#39;flags&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">game</span><span class="o">.</span><span class="n">flags</span><span class="p">[</span><span class="n">name</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;utf-8&#39;</span><span class="p">)]</span> <span class="o">=</span> <span class="n">flag</span>
+            <span class="k">return</span> <span class="n">game</span>
+       
+        <span class="k">if</span> <span class="n">dct</span><span class="p">[</span><span class="s">&#39;__class__&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;TeamInfo&#39;</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">dct</span><span class="p">[</span><span class="s">&#39;__value__&#39;</span><span class="p">]</span>
+            <span class="n">team</span> <span class="o">=</span> <span class="n">TeamInfo</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;utf-8&#39;</span><span class="p">))</span>
+            <span class="n">team</span><span class="o">.</span><span class="n">members</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s">&#39;members&#39;</span><span class="p">]</span> <span class="c"># needs fixup</span>
+            <span class="n">team</span><span class="o">.</span><span class="n">flag</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s">&#39;flag&#39;</span><span class="p">]</span> <span class="c"># needs fixup</span>
+            <span class="n">team</span><span class="o">.</span><span class="n">flagScoreLocation</span> <span class="o">=</span> <span class="n">toVector2</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s">&#39;flagScoreLocation&#39;</span><span class="p">])</span>
+            <span class="n">team</span><span class="o">.</span><span class="n">flagSpawnLocation</span> <span class="o">=</span> <span class="n">toVector2</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s">&#39;flagSpawnLocation&#39;</span><span class="p">])</span>
+            <span class="n">team</span><span class="o">.</span><span class="n">botSpawnArea</span> <span class="o">=</span> <span class="p">(</span><span class="n">toVector2</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s">&#39;botSpawnArea&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span> <span class="n">toVector2</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s">&#39;botSpawnArea&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">]))</span>
+            <span class="k">return</span> <span class="n">team</span>
+
+        <span class="k">if</span> <span class="n">dct</span><span class="p">[</span><span class="s">&#39;__class__&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;FlagInfo&#39;</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">dct</span><span class="p">[</span><span class="s">&#39;__value__&#39;</span><span class="p">]</span>
+            <span class="n">flag</span> <span class="o">=</span> <span class="n">FlagInfo</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;utf-8&#39;</span><span class="p">))</span>
+            <span class="n">flag</span><span class="o">.</span><span class="n">team</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s">&#39;team&#39;</span><span class="p">]</span> <span class="c"># needs fixup</span>
+            <span class="n">flag</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="n">toVector2</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s">&#39;position&#39;</span><span class="p">])</span>
+            <span class="n">flag</span><span class="o">.</span><span class="n">carrier</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s">&#39;carrier&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">value</span><span class="p">[</span><span class="s">&#39;carrier&#39;</span><span class="p">]</span> <span class="k">else</span> <span class="bp">None</span> <span class="c"># needs fixup</span>
+            <span class="n">flag</span><span class="o">.</span><span class="n">respawnTimer</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s">&#39;respawnTimer&#39;</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">flag</span>
+
+
+        <span class="k">if</span> <span class="n">dct</span><span class="p">[</span><span class="s">&#39;__class__&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;BotInfo&#39;</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">dct</span><span class="p">[</span><span class="s">&#39;__value__&#39;</span><span class="p">]</span>
+            <span class="n">bot</span> <span class="o">=</span> <span class="n">BotInfo</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;utf-8&#39;</span><span class="p">))</span>
+            <span class="n">bot</span><span class="o">.</span><span class="n">team</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s">&#39;team&#39;</span><span class="p">]</span> <span class="c"># needs fixup</span>
+            <span class="n">bot</span><span class="o">.</span><span class="n">health</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s">&#39;health&#39;</span><span class="p">]</span>
+            <span class="n">bot</span><span class="o">.</span><span class="n">currentAction</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s">&#39;currentAction&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">value</span><span class="p">[</span><span class="s">&#39;currentAction&#39;</span><span class="p">]</span> <span class="k">else</span> <span class="bp">None</span>
+            <span class="n">bot</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s">&#39;state&#39;</span><span class="p">]</span>
+            <span class="n">bot</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="n">toVector2</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s">&#39;position&#39;</span><span class="p">])</span> <span class="k">if</span> <span class="n">value</span><span class="p">[</span><span class="s">&#39;position&#39;</span><span class="p">]</span> <span class="k">else</span> <span class="bp">None</span>
+            <span class="n">bot</span><span class="o">.</span><span class="n">facingDirection</span> <span class="o">=</span> <span class="n">toVector2</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s">&#39;facingDirection&#39;</span><span class="p">])</span> <span class="k">if</span> <span class="n">value</span><span class="p">[</span><span class="s">&#39;facingDirection&#39;</span><span class="p">]</span> <span class="k">else</span> <span class="bp">None</span>
+            <span class="n">bot</span><span class="o">.</span><span class="n">seenlast</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s">&#39;seenlast&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">value</span><span class="p">[</span><span class="s">&#39;seenlast&#39;</span><span class="p">]</span> <span class="k">else</span> <span class="bp">None</span>
+            <span class="n">bot</span><span class="o">.</span><span class="n">flag</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s">&#39;flag&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">value</span><span class="p">[</span><span class="s">&#39;flag&#39;</span><span class="p">]</span> <span class="k">else</span> <span class="bp">None</span> <span class="c"># needs fixup</span>
+            <span class="n">bot</span><span class="o">.</span><span class="n">visibleEnemies</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s">&#39;visibleEnemies&#39;</span><span class="p">]</span> <span class="c"># needs fixup</span>
+            <span class="n">bot</span><span class="o">.</span><span class="n">seenBy</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s">&#39;seenBy&#39;</span><span class="p">]</span> <span class="c"># needs fixup</span>
+            <span class="k">return</span> <span class="n">bot</span>
+
+        <span class="k">if</span> <span class="n">dct</span><span class="p">[</span><span class="s">&#39;__class__&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;MatchInfo&#39;</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">dct</span><span class="p">[</span><span class="s">&#39;__value__&#39;</span><span class="p">]</span>
+            <span class="n">match</span> <span class="o">=</span> <span class="n">MatchInfo</span><span class="p">()</span>
+            <span class="n">match</span><span class="o">.</span><span class="n">scores</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">teamName</span><span class="p">,</span> <span class="n">score</span> <span class="ow">in</span> <span class="n">value</span><span class="p">[</span><span class="s">&#39;scores&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">match</span><span class="o">.</span><span class="n">scores</span><span class="p">[</span><span class="n">teamName</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;utf-8&#39;</span><span class="p">)]</span> <span class="o">=</span> <span class="n">score</span>
+            <span class="n">match</span><span class="o">.</span><span class="n">timeRemaining</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s">&#39;timeRemaining&#39;</span><span class="p">]</span>
+            <span class="n">match</span><span class="o">.</span><span class="n">timeToNextRespawn</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s">&#39;timeToNextRespawn&#39;</span><span class="p">]</span>
+            <span class="n">match</span><span class="o">.</span><span class="n">timePassed</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s">&#39;timePassed&#39;</span><span class="p">]</span>
+            <span class="n">match</span><span class="o">.</span><span class="n">combatEvents</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s">&#39;combatEvents&#39;</span><span class="p">]</span> <span class="c"># TODO: check this deserialization</span>
+            <span class="k">return</span> <span class="n">match</span>
+
+        <span class="k">if</span> <span class="n">dct</span><span class="p">[</span><span class="s">&#39;__class__&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;MatchCombatEvent&#39;</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">dct</span><span class="p">[</span><span class="s">&#39;__value__&#39;</span><span class="p">]</span>
+            <span class="n">combatEvent</span> <span class="o">=</span> <span class="n">MatchCombatEvent</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s">&#39;type&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;utf-8&#39;</span><span class="p">),</span> <span class="n">value</span><span class="p">[</span><span class="s">&#39;subject&#39;</span><span class="p">],</span> <span class="n">value</span><span class="p">[</span><span class="s">&#39;instigator&#39;</span><span class="p">],</span> <span class="n">value</span><span class="p">[</span><span class="s">&#39;time&#39;</span><span class="p">])</span> <span class="c"># subject and instigator needs fixup</span>
+            <span class="k">return</span> <span class="n">combatEvent</span>
+
+    <span class="k">return</span> <span class="n">dct</span>
+
+
+
+<span class="k">def</span> <span class="nf">fixupReferences</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">game</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">LevelInfo</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">GameInfo</span><span class="p">):</span>
+        <span class="n">new_game</span> <span class="o">=</span> <span class="n">obj</span>
+        <span class="c"># game and new_game should be the same in production code</span>
+        <span class="c"># but they may differ in unittests</span>
+        <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">new_game</span><span class="o">.</span><span class="n">bots</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">fixupReferences</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">game</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">new_game</span><span class="o">.</span><span class="n">teams</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">fixupReferences</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">game</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">new_game</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">fixupReferences</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">game</span><span class="p">)</span>
+        <span class="n">new_game</span><span class="o">.</span><span class="n">team</span> <span class="o">=</span> <span class="n">game</span><span class="o">.</span><span class="n">teams</span><span class="p">[</span><span class="n">new_game</span><span class="o">.</span><span class="n">team</span><span class="p">]</span>
+        <span class="n">new_game</span><span class="o">.</span><span class="n">enemyTeam</span> <span class="o">=</span> <span class="n">game</span><span class="o">.</span><span class="n">teams</span><span class="p">[</span><span class="n">new_game</span><span class="o">.</span><span class="n">enemyTeam</span><span class="p">]</span>
+
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">TeamInfo</span><span class="p">):</span>
+        <span class="n">team</span> <span class="o">=</span> <span class="n">obj</span>
+        <span class="n">team</span><span class="o">.</span><span class="n">members</span> <span class="o">=</span> <span class="p">[</span><span class="n">game</span><span class="o">.</span><span class="n">bots</span><span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">team</span><span class="o">.</span><span class="n">members</span><span class="p">]</span>
+        <span class="n">team</span><span class="o">.</span><span class="n">flag</span> <span class="o">=</span> <span class="n">game</span><span class="o">.</span><span class="n">flags</span><span class="p">[</span><span class="n">team</span><span class="o">.</span><span class="n">flag</span><span class="p">]</span>
+
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">FlagInfo</span><span class="p">):</span>
+        <span class="n">flag</span> <span class="o">=</span> <span class="n">obj</span>
+        <span class="n">flag</span><span class="o">.</span><span class="n">team</span> <span class="o">=</span> <span class="n">game</span><span class="o">.</span><span class="n">teams</span><span class="p">[</span><span class="n">flag</span><span class="o">.</span><span class="n">team</span><span class="p">]</span>
+        <span class="n">flag</span><span class="o">.</span><span class="n">carrier</span> <span class="o">=</span> <span class="n">game</span><span class="o">.</span><span class="n">bots</span><span class="p">[</span><span class="n">flag</span><span class="o">.</span><span class="n">carrier</span><span class="p">]</span> <span class="k">if</span> <span class="n">flag</span><span class="o">.</span><span class="n">carrier</span> <span class="k">else</span> <span class="bp">None</span>
+
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">BotInfo</span><span class="p">):</span>
+        <span class="n">bot</span> <span class="o">=</span> <span class="n">obj</span>
+        <span class="n">bot</span><span class="o">.</span><span class="n">team</span> <span class="o">=</span> <span class="n">game</span><span class="o">.</span><span class="n">teams</span><span class="p">[</span><span class="n">bot</span><span class="o">.</span><span class="n">team</span><span class="p">]</span>
+        <span class="n">bot</span><span class="o">.</span><span class="n">flag</span> <span class="o">=</span> <span class="n">game</span><span class="o">.</span><span class="n">flags</span><span class="p">[</span><span class="n">bot</span><span class="o">.</span><span class="n">flag</span><span class="p">]</span> <span class="k">if</span> <span class="n">bot</span><span class="o">.</span><span class="n">flag</span> <span class="k">else</span> <span class="bp">None</span>
+        <span class="n">bot</span><span class="o">.</span><span class="n">visibleEnemies</span> <span class="o">=</span> <span class="p">[</span><span class="n">game</span><span class="o">.</span><span class="n">bots</span><span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">bot</span><span class="o">.</span><span class="n">visibleEnemies</span><span class="p">]</span>
+        <span class="n">bot</span><span class="o">.</span><span class="n">seenBy</span> <span class="o">=</span> <span class="p">[</span><span class="n">game</span><span class="o">.</span><span class="n">bots</span><span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">bot</span><span class="o">.</span><span class="n">seenBy</span><span class="p">]</span>
+
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">MatchInfo</span><span class="p">):</span>
+        <span class="n">match</span> <span class="o">=</span> <span class="n">obj</span>
+        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">match</span><span class="o">.</span><span class="n">combatEvents</span><span class="p">:</span>
+            <span class="n">fixupReferences</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">game</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">MatchCombatEvent</span><span class="p">):</span>
+        <span class="n">combatEvent</span> <span class="o">=</span> <span class="n">obj</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">combatEvent</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">combatEvent</span><span class="o">.</span><span class="n">CombatEvent</span><span class="o">.</span><span class="n">TYPE_FLAG_PICKEDUP</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">combatEvent</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">combatEvent</span><span class="o">.</span><span class="n">CombatEvent</span><span class="o">.</span><span class="n">TYPE_FLAG_DROPPED</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">combatEvent</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">combatEvent</span><span class="o">.</span><span class="n">CombatEvent</span><span class="o">.</span><span class="n">TYPE_FLAG_CAPTURED</span><span class="p">):</span>
+            <span class="n">combatEvent</span><span class="o">.</span><span class="n">subject</span> <span class="o">=</span> <span class="n">game</span><span class="o">.</span><span class="n">flags</span><span class="p">[</span><span class="n">combatEvent</span><span class="o">.</span><span class="n">subject</span><span class="p">]</span> <span class="c"># TODO or flags depending on event type</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">combatEvent</span><span class="o">.</span><span class="n">subject</span> <span class="o">=</span> <span class="n">game</span><span class="o">.</span><span class="n">bots</span><span class="p">[</span><span class="n">combatEvent</span><span class="o">.</span><span class="n">subject</span><span class="p">]</span>
+        <span class="n">combatEvent</span><span class="o">.</span><span class="n">instigator</span> <span class="o">=</span> <span class="n">game</span><span class="o">.</span><span class="n">bots</span><span class="p">[</span><span class="n">combatEvent</span><span class="o">.</span><span class="n">instigator</span><span class="p">]</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Capture The Flag alpha documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, AiGameDev.com KG.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

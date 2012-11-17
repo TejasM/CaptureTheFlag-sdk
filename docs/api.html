@@ -1,0 +1,683 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>2. Python API Documentation &mdash; Capture The Flag alpha documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     'alpha',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Capture The Flag alpha documentation" href="index.html" />
+    <link rel="next" title="3. Example Python Commanders" href="examples.html" />
+    <link rel="prev" title="1. Network Data Protocol" href="network.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="examples.html" title="3. Example Python Commanders"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="network.html" title="1. Network Data Protocol"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Capture The Flag alpha documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="python-api-documentation">
+<h1>2. Python API Documentation<a class="headerlink" href="#python-api-documentation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-api.commander">
+<span id="commander"></span><h2>2.1. Commander<a class="headerlink" href="#module-api.commander" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="api.commander.Commander">
+<em class="property">class </em><tt class="descclassname">api.commander.</tt><tt class="descname">Commander</tt><a class="reference internal" href="_modules/api/commander.html#Commander"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.commander.Commander" title="Permalink to this definition">¶</a></dt>
+<dd><p>The base class for Commanders, that give orders to the team members.
+This class should be inherited from to create your own competition Commander.
+You must implement <cite>tick(self)</cite> in your custom Commander.</p>
+<dl class="attribute">
+<dt id="api.commander.Commander.game">
+<tt class="descname">game</tt><em class="property"> = None</em><a class="headerlink" href="#api.commander.Commander.game" title="Permalink to this definition">¶</a></dt>
+<dd><p>The GameInfo object describing this Commander&#8217;s knowledge of the current state of the game.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="api.commander.Commander.initialize">
+<tt class="descname">initialize</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/api/commander.html#Commander.initialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.commander.Commander.initialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use this function to setup your bot before the game starts.
+You can also set self.verbose = True to get more information about each bot visually.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="api.commander.Commander.issue">
+<tt class="descname">issue</tt><big>(</big><em>CommandClass</em>, <em>bot</em>, <em>*args</em>, <em>**dct</em><big>)</big><a class="reference internal" href="_modules/api/commander.html#Commander.issue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.commander.Commander.issue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Issue a command for a single bot, with optional arguments depending on the command.</p>
+<p><cite>CommandClass</cite>: must be one of <cite>[api.commands.Defend, api.commands.Attack, api.commands.Move, api.commands.Charge]</cite></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="api.commander.Commander.level">
+<tt class="descname">level</tt><em class="property"> = None</em><a class="headerlink" href="#api.commander.Commander.level" title="Permalink to this definition">¶</a></dt>
+<dd><p>The LevelInfo object describing the current level.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="api.commander.Commander.log">
+<tt class="descname">log</tt><em class="property"> = None</em><a class="headerlink" href="#api.commander.Commander.log" title="Permalink to this definition">¶</a></dt>
+<dd><p>The logging object that should be used for debug printing.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="api.commander.Commander.name">
+<tt class="descname">name</tt><em class="property"> = None</em><a class="headerlink" href="#api.commander.Commander.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>The name of this commander.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="api.commander.Commander.shutdown">
+<tt class="descname">shutdown</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/api/commander.html#Commander.shutdown"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.commander.Commander.shutdown" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use this function to teardown your bot after the game is over.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="api.commander.Commander.tick">
+<tt class="descname">tick</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/api/commander.html#Commander.tick"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.commander.Commander.tick" title="Permalink to this definition">¶</a></dt>
+<dd><p>Override this function for your own bots.  Here you can access all the information in <cite>self.game</cite>,
+which includes game information, and <cite>self.level</cite> which includes information about the level.</p>
+<p>You can send commands to your bots using the <cite>self.issue()</cite> function in this class.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="api.commander.Commander.verbose">
+<tt class="descname">verbose</tt><em class="property"> = None</em><a class="headerlink" href="#api.commander.Commander.verbose" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set this to true to enable the display of the bot command descriptions next to each bot.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-api.gameinfo">
+<span id="game-info"></span><h2>2.2. Game Info<a class="headerlink" href="#module-api.gameinfo" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="api.gameinfo.BotInfo">
+<em class="property">class </em><tt class="descclassname">api.gameinfo.</tt><tt class="descname">BotInfo</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="_modules/api/gameinfo.html#BotInfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.gameinfo.BotInfo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Information that you know about each of the bots.
+Enemy bots will contain information about the last time they were seen.
+Friendly bots will contain full information.</p>
+<dl class="attribute">
+<dt id="api.gameinfo.BotInfo.facingDirection">
+<tt class="descname">facingDirection</tt><em class="property"> = None</em><a class="headerlink" href="#api.gameinfo.BotInfo.facingDirection" title="Permalink to this definition">¶</a></dt>
+<dd><p>The last known movement direction (Vector2) of the bot, None for bots that you have never seen</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="api.gameinfo.BotInfo.flag">
+<tt class="descname">flag</tt><em class="property"> = None</em><a class="headerlink" href="#api.gameinfo.BotInfo.flag" title="Permalink to this definition">¶</a></dt>
+<dd><p>The flag being carried by the bot, None if no flag is carried. This is always known for both friendly and enemy bots.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="api.gameinfo.BotInfo.health">
+<tt class="descname">health</tt><em class="property"> = None</em><a class="headerlink" href="#api.gameinfo.BotInfo.health" title="Permalink to this definition">¶</a></dt>
+<dd><p>The current action of a bot (string) (None for unseen enemy bots).</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="api.gameinfo.BotInfo.name">
+<tt class="descname">name</tt><em class="property"> = None</em><a class="headerlink" href="#api.gameinfo.BotInfo.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>The name of this bot</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="api.gameinfo.BotInfo.position">
+<tt class="descname">position</tt><em class="property"> = None</em><a class="headerlink" href="#api.gameinfo.BotInfo.position" title="Permalink to this definition">¶</a></dt>
+<dd><p>The last known position (Vector2) of the bot, None for bots that you have never seen.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="api.gameinfo.BotInfo.seenBy">
+<tt class="descname">seenBy</tt><em class="property"> = None</em><a class="headerlink" href="#api.gameinfo.BotInfo.seenBy" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of BotInfo objects for enemies which are visible by the team and can see this bot
+For enemy bots which are not visible to this commander, this will be an empty list.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="api.gameinfo.BotInfo.seenlast">
+<tt class="descname">seenlast</tt><em class="property"> = None</em><a class="headerlink" href="#api.gameinfo.BotInfo.seenlast" title="Permalink to this definition">¶</a></dt>
+<dd><p>The time since this bot was last seen, None for bots that you have never seen</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="api.gameinfo.BotInfo.state">
+<tt class="descname">state</tt><em class="property"> = None</em><a class="headerlink" href="#api.gameinfo.BotInfo.state" title="Permalink to this definition">¶</a></dt>
+<dd><p>The last known state of this bots for enemies, STATE_UNKNOWN for bots that you have never seen. The possible states of an enemy bot: <cite>STATE_UNKNOWN</cite>, <cite>STATE_IDLE</cite>, <cite>STATE_DEFENDING</cite>, <cite>STATE_MOVING</cite>, <cite>STATE_ATTACKING</cite>, <cite>STATE_CHARGING</cite>, <cite>STATE_SHOOTING</cite></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="api.gameinfo.BotInfo.team">
+<tt class="descname">team</tt><em class="property"> = None</em><a class="headerlink" href="#api.gameinfo.BotInfo.team" title="Permalink to this definition">¶</a></dt>
+<dd><p>The TeamInfo for the team that owns this bot</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="api.gameinfo.BotInfo.visibleEnemies">
+<tt class="descname">visibleEnemies</tt><em class="property"> = None</em><a class="headerlink" href="#api.gameinfo.BotInfo.visibleEnemies" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of BotInfo objects for enemies which are visible to this bot.
+For enemy bots which are not visible to this commander, this will be an empty list.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="api.gameinfo.FlagInfo">
+<em class="property">class </em><tt class="descclassname">api.gameinfo.</tt><tt class="descname">FlagInfo</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="_modules/api/gameinfo.html#FlagInfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.gameinfo.FlagInfo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Information about each of the flags.
+The positions of all flags are always known.
+If a flag is being carried the carrier is always known</p>
+<dl class="attribute">
+<dt id="api.gameinfo.FlagInfo.carrier">
+<tt class="descname">carrier</tt><em class="property"> = None</em><a class="headerlink" href="#api.gameinfo.FlagInfo.carrier" title="Permalink to this definition">¶</a></dt>
+<dd><p>carrier             The BotInfo object for the bot that is currently carrying the flag (None if it is not being carried)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="api.gameinfo.FlagInfo.name">
+<tt class="descname">name</tt><em class="property"> = None</em><a class="headerlink" href="#api.gameinfo.FlagInfo.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>name                The name of the flag</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="api.gameinfo.FlagInfo.position">
+<tt class="descname">position</tt><em class="property"> = None</em><a class="headerlink" href="#api.gameinfo.FlagInfo.position" title="Permalink to this definition">¶</a></dt>
+<dd><p>position            The current position of the flag (always known)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="api.gameinfo.FlagInfo.respawnTimer">
+<tt class="descname">respawnTimer</tt><em class="property"> = None</em><a class="headerlink" href="#api.gameinfo.FlagInfo.respawnTimer" title="Permalink to this definition">¶</a></dt>
+<dd><p>respawnTimer        Time in seconds until a dropped flag is respawned at its spawn location</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="api.gameinfo.FlagInfo.team">
+<tt class="descname">team</tt><em class="property"> = None</em><a class="headerlink" href="#api.gameinfo.FlagInfo.team" title="Permalink to this definition">¶</a></dt>
+<dd><p>team                The team that owns this flag.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="api.gameinfo.GameInfo">
+<em class="property">class </em><tt class="descclassname">api.gameinfo.</tt><tt class="descname">GameInfo</tt><a class="reference internal" href="_modules/api/gameinfo.html#GameInfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.gameinfo.GameInfo" title="Permalink to this definition">¶</a></dt>
+<dd><p>All of the filtered read-only information about the current game state.
+This shouldn&#8217;t be modified. Modifying it will only hurt yourself.
+Updated each frame to show the current known information about the world.</p>
+<dl class="attribute">
+<dt id="api.gameinfo.GameInfo.bots">
+<tt class="descname">bots</tt><em class="property"> = None</em><a class="headerlink" href="#api.gameinfo.GameInfo.bots" title="Permalink to this definition">¶</a></dt>
+<dd><p>The dictionary containing the BotInfo object for each bot indexed by bot name</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="api.gameinfo.GameInfo.bots_alive">
+<tt class="descname">bots_alive</tt><a class="reference internal" href="_modules/api/gameinfo.html#GameInfo.bots_alive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.gameinfo.GameInfo.bots_alive" title="Permalink to this definition">¶</a></dt>
+<dd><p>The list of all bots in this team that are currently alive.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="api.gameinfo.GameInfo.bots_available">
+<tt class="descname">bots_available</tt><a class="reference internal" href="_modules/api/gameinfo.html#GameInfo.bots_available"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.gameinfo.GameInfo.bots_available" title="Permalink to this definition">¶</a></dt>
+<dd><p>The list of all bots in this team that are currently alive and not doing an action.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="api.gameinfo.GameInfo.enemyFlags">
+<tt class="descname">enemyFlags</tt><a class="reference internal" href="_modules/api/gameinfo.html#GameInfo.enemyFlags"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.gameinfo.GameInfo.enemyFlags" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of FlagInfo objects for all enemy flags. Set up to support more than one enemy team</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="api.gameinfo.GameInfo.enemyTeam">
+<tt class="descname">enemyTeam</tt><em class="property"> = None</em><a class="headerlink" href="#api.gameinfo.GameInfo.enemyTeam" title="Permalink to this definition">¶</a></dt>
+<dd><p>The TeamInfo object describing the enemy team</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="api.gameinfo.GameInfo.flags">
+<tt class="descname">flags</tt><em class="property"> = None</em><a class="headerlink" href="#api.gameinfo.GameInfo.flags" title="Permalink to this definition">¶</a></dt>
+<dd><p>The dictionary containing the FlagInfo object for each flag indexed by flag name</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="api.gameinfo.GameInfo.match">
+<tt class="descname">match</tt><em class="property"> = None</em><a class="headerlink" href="#api.gameinfo.GameInfo.match" title="Permalink to this definition">¶</a></dt>
+<dd><p>The MatchInfo object describing the current match</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="api.gameinfo.GameInfo.team">
+<tt class="descname">team</tt><em class="property"> = None</em><a class="headerlink" href="#api.gameinfo.GameInfo.team" title="Permalink to this definition">¶</a></dt>
+<dd><p>The TeamInfo object describing your team</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="api.gameinfo.GameInfo.teams">
+<tt class="descname">teams</tt><em class="property"> = None</em><a class="headerlink" href="#api.gameinfo.GameInfo.teams" title="Permalink to this definition">¶</a></dt>
+<dd><p>The dictionary containing the TeamInfo object for each team indexed by team name</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="api.gameinfo.LevelInfo">
+<em class="property">class </em><tt class="descclassname">api.gameinfo.</tt><tt class="descname">LevelInfo</tt><a class="reference internal" href="_modules/api/gameinfo.html#LevelInfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.gameinfo.LevelInfo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Provides information about the level the game is played in.</p>
+<dl class="attribute">
+<dt id="api.gameinfo.LevelInfo.FOVangle">
+<tt class="descname">FOVangle</tt><em class="property"> = None</em><a class="headerlink" href="#api.gameinfo.LevelInfo.FOVangle" title="Permalink to this definition">¶</a></dt>
+<dd><p>The visibility angle of the bots</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="api.gameinfo.LevelInfo.area">
+<tt class="descname">area</tt><a class="reference internal" href="_modules/api/gameinfo.html#LevelInfo.area"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.gameinfo.LevelInfo.area" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the full area of the world.
+This can be used with findRandomFreePositionInBox to find a random position in the world.
+eg levelInfo.findRandomFreePositionInBox(levelInfo.area)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="api.gameinfo.LevelInfo.blockHeights">
+<tt class="descname">blockHeights</tt><em class="property"> = None</em><a class="headerlink" href="#api.gameinfo.LevelInfo.blockHeights" title="Permalink to this definition">¶</a></dt>
+<dd><p>2d list describing the size of block at each position in world, 0 if there is no block at this position</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="api.gameinfo.LevelInfo.botSpawnAreas">
+<tt class="descname">botSpawnAreas</tt><em class="property"> = None</em><a class="headerlink" href="#api.gameinfo.LevelInfo.botSpawnAreas" title="Permalink to this definition">¶</a></dt>
+<dd><p>Map of team name the extents (Vector2, Vector2) of each team&#8217;s bot spawn area</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="api.gameinfo.LevelInfo.characterRadius">
+<tt class="descname">characterRadius</tt><em class="property"> = None</em><a class="headerlink" href="#api.gameinfo.LevelInfo.characterRadius" title="Permalink to this definition">¶</a></dt>
+<dd><p>The radius of the character</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="api.gameinfo.LevelInfo.findNearestFreePosition">
+<tt class="descname">findNearestFreePosition</tt><big>(</big><em>target</em><big>)</big><a class="reference internal" href="_modules/api/gameinfo.html#LevelInfo.findNearestFreePosition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.gameinfo.LevelInfo.findNearestFreePosition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find a free position near &#8216;target&#8217; for a character to move to.
+None is returned if no position could be found.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="api.gameinfo.LevelInfo.findRandomFreePositionInBox">
+<tt class="descname">findRandomFreePositionInBox</tt><big>(</big><em>area</em><big>)</big><a class="reference internal" href="_modules/api/gameinfo.html#LevelInfo.findRandomFreePositionInBox"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.gameinfo.LevelInfo.findRandomFreePositionInBox" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find a random position for a character to move to in an area.
+None is returned if no position could be found.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="api.gameinfo.LevelInfo.firingDistance">
+<tt class="descname">firingDistance</tt><em class="property"> = None</em><a class="headerlink" href="#api.gameinfo.LevelInfo.firingDistance" title="Permalink to this definition">¶</a></dt>
+<dd><p>The maximum firing distance of the bots</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="api.gameinfo.LevelInfo.flagScoreLocations">
+<tt class="descname">flagScoreLocations</tt><em class="property"> = None</em><a class="headerlink" href="#api.gameinfo.LevelInfo.flagScoreLocations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Map of team name the location (Vector2) the flag must be taken to score</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="api.gameinfo.LevelInfo.flagSpawnLocations">
+<tt class="descname">flagSpawnLocations</tt><em class="property"> = None</em><a class="headerlink" href="#api.gameinfo.LevelInfo.flagSpawnLocations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Map of team name the spawn location (Vector2) of the team&#8217;s flag</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="api.gameinfo.LevelInfo.height">
+<tt class="descname">height</tt><em class="property"> = None</em><a class="headerlink" href="#api.gameinfo.LevelInfo.height" title="Permalink to this definition">¶</a></dt>
+<dd><p>The height of world grid</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="api.gameinfo.LevelInfo.runningSpeed">
+<tt class="descname">runningSpeed</tt><em class="property"> = None</em><a class="headerlink" href="#api.gameinfo.LevelInfo.runningSpeed" title="Permalink to this definition">¶</a></dt>
+<dd><p>The running speed of the bots</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="api.gameinfo.LevelInfo.teamNames">
+<tt class="descname">teamNames</tt><em class="property"> = None</em><a class="headerlink" href="#api.gameinfo.LevelInfo.teamNames" title="Permalink to this definition">¶</a></dt>
+<dd><p>A list of the team names supported by this level.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="api.gameinfo.LevelInfo.walkingSpeed">
+<tt class="descname">walkingSpeed</tt><em class="property"> = None</em><a class="headerlink" href="#api.gameinfo.LevelInfo.walkingSpeed" title="Permalink to this definition">¶</a></dt>
+<dd><p>The walking speed of the bots</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="api.gameinfo.LevelInfo.width">
+<tt class="descname">width</tt><em class="property"> = None</em><a class="headerlink" href="#api.gameinfo.LevelInfo.width" title="Permalink to this definition">¶</a></dt>
+<dd><p>The width of world grid</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="api.gameinfo.MatchCombatEvent">
+<em class="property">class </em><tt class="descclassname">api.gameinfo.</tt><tt class="descname">MatchCombatEvent</tt><big>(</big><em>type</em>, <em>subject</em>, <em>instigator</em>, <em>time</em><big>)</big><a class="reference internal" href="_modules/api/gameinfo.html#MatchCombatEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.gameinfo.MatchCombatEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Information about a particular game event.</p>
+<dl class="attribute">
+<dt id="api.gameinfo.MatchCombatEvent.instigator">
+<tt class="descname">instigator</tt><em class="property"> = None</em><a class="headerlink" href="#api.gameinfo.MatchCombatEvent.instigator" title="Permalink to this definition">¶</a></dt>
+<dd><p>The name of the bot which instigated this event</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="api.gameinfo.MatchCombatEvent.subject">
+<tt class="descname">subject</tt><em class="property"> = None</em><a class="headerlink" href="#api.gameinfo.MatchCombatEvent.subject" title="Permalink to this definition">¶</a></dt>
+<dd><p>The name of the flag/bot that this event is about</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="api.gameinfo.MatchCombatEvent.time">
+<tt class="descname">time</tt><em class="property"> = None</em><a class="headerlink" href="#api.gameinfo.MatchCombatEvent.time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Time in seconds since the beginning of this match that this event occurred.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="api.gameinfo.MatchCombatEvent.type">
+<tt class="descname">type</tt><em class="property"> = None</em><a class="headerlink" href="#api.gameinfo.MatchCombatEvent.type" title="Permalink to this definition">¶</a></dt>
+<dd><p>The type of event (<cite>TYPE_NONE</cite>, <cite>TYPE_KILLED</cite>, <cite>TYPE_FLAG_PICKEDUP</cite>, <cite>TYPE_FLAG_DROPPED</cite>, <cite>TYPE_FLAG_CAPTURED</cite>)</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="api.gameinfo.MatchInfo">
+<em class="property">class </em><tt class="descclassname">api.gameinfo.</tt><tt class="descname">MatchInfo</tt><a class="reference internal" href="_modules/api/gameinfo.html#MatchInfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.gameinfo.MatchInfo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Information about the current match.</p>
+<dl class="attribute">
+<dt id="api.gameinfo.MatchInfo.combatEvents">
+<tt class="descname">combatEvents</tt><em class="property"> = None</em><a class="headerlink" href="#api.gameinfo.MatchInfo.combatEvents" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of combat events that have occurred during this match.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="api.gameinfo.MatchInfo.scores">
+<tt class="descname">scores</tt><em class="property"> = None</em><a class="headerlink" href="#api.gameinfo.MatchInfo.scores" title="Permalink to this definition">¶</a></dt>
+<dd><p>A dictionary of team name to score</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="api.gameinfo.MatchInfo.timePassed">
+<tt class="descname">timePassed</tt><em class="property"> = None</em><a class="headerlink" href="#api.gameinfo.MatchInfo.timePassed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Time in seconds since the beginning of this match</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="api.gameinfo.MatchInfo.timeRemaining">
+<tt class="descname">timeRemaining</tt><em class="property"> = None</em><a class="headerlink" href="#api.gameinfo.MatchInfo.timeRemaining" title="Permalink to this definition">¶</a></dt>
+<dd><p>Time in seconds until this match ends</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="api.gameinfo.MatchInfo.timeToNextRespawn">
+<tt class="descname">timeToNextRespawn</tt><em class="property"> = None</em><a class="headerlink" href="#api.gameinfo.MatchInfo.timeToNextRespawn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Time in seconds until the next bot respawn cycle</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="api.gameinfo.TeamInfo">
+<em class="property">class </em><tt class="descclassname">api.gameinfo.</tt><tt class="descname">TeamInfo</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="_modules/api/gameinfo.html#TeamInfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.gameinfo.TeamInfo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Information about the current team including ids of all of the members of the team</p>
+<dl class="attribute">
+<dt id="api.gameinfo.TeamInfo.botSpawnArea">
+<tt class="descname">botSpawnArea</tt><em class="property"> = None</em><a class="headerlink" href="#api.gameinfo.TeamInfo.botSpawnArea" title="Permalink to this definition">¶</a></dt>
+<dd><p>The (min, max) extents (Vector2, Vector2) of each team&#8217;s bot spawn area</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="api.gameinfo.TeamInfo.flag">
+<tt class="descname">flag</tt><em class="property"> = None</em><a class="headerlink" href="#api.gameinfo.TeamInfo.flag" title="Permalink to this definition">¶</a></dt>
+<dd><p>The FlagInfo object for this team&#8217;s flag.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="api.gameinfo.TeamInfo.flagScoreLocation">
+<tt class="descname">flagScoreLocation</tt><em class="property"> = None</em><a class="headerlink" href="#api.gameinfo.TeamInfo.flagScoreLocation" title="Permalink to this definition">¶</a></dt>
+<dd><p>The position (Vector2) where the team must return an enemy flag to score a point.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="api.gameinfo.TeamInfo.flagSpawnLocation">
+<tt class="descname">flagSpawnLocation</tt><em class="property"> = None</em><a class="headerlink" href="#api.gameinfo.TeamInfo.flagSpawnLocation" title="Permalink to this definition">¶</a></dt>
+<dd><p>The position (Vector2) where this team&#8217;s flag is spawned.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="api.gameinfo.TeamInfo.members">
+<tt class="descname">members</tt><em class="property"> = None</em><a class="headerlink" href="#api.gameinfo.TeamInfo.members" title="Permalink to this definition">¶</a></dt>
+<dd><p>A list of the BotInfo objects for each member of the team</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="api.gameinfo.TeamInfo.name">
+<tt class="descname">name</tt><em class="property"> = None</em><a class="headerlink" href="#api.gameinfo.TeamInfo.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>The name of the team</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-api.commands">
+<span id="commands"></span><h2>2.3. Commands<a class="headerlink" href="#module-api.commands" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="api.commands.Attack">
+<em class="property">class </em><tt class="descclassname">api.commands.</tt><tt class="descname">Attack</tt><big>(</big><em>botId</em>, <em>target</em>, <em>lookAt=None</em>, <em>description=''</em><big>)</big><a class="reference internal" href="_modules/api/commands.html#Attack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.commands.Attack" title="Permalink to this definition">¶</a></dt>
+<dd><p>Commands a bot to attack a specified position. If an enemy bot is seen by this bot, it will be attacked.</p>
+<dl class="attribute">
+<dt id="api.commands.Attack.botId">
+<tt class="descname">botId</tt><em class="property"> = None</em><a class="headerlink" href="#api.commands.Attack.botId" title="Permalink to this definition">¶</a></dt>
+<dd><p>The name of the bot</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="api.commands.Attack.description">
+<tt class="descname">description</tt><em class="property"> = None</em><a class="headerlink" href="#api.commands.Attack.description" title="Permalink to this definition">¶</a></dt>
+<dd><p>A description of the intention of the bot. This is displayed automatically if the commander sets self.verbose = True</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="api.commands.Attack.lookAt">
+<tt class="descname">lookAt</tt><em class="property"> = None</em><a class="headerlink" href="#api.commands.Attack.lookAt" title="Permalink to this definition">¶</a></dt>
+<dd><p>An optional position (Vector2) which the bot should look at while moving</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="api.commands.Attack.target">
+<tt class="descname">target</tt><em class="property"> = None</em><a class="headerlink" href="#api.commands.Attack.target" title="Permalink to this definition">¶</a></dt>
+<dd><p>The target destination (Vector2) or list of destination waypoints ([Vector2])</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="api.commands.Charge">
+<em class="property">class </em><tt class="descclassname">api.commands.</tt><tt class="descname">Charge</tt><big>(</big><em>botId</em>, <em>target</em>, <em>description=''</em><big>)</big><a class="reference internal" href="_modules/api/commands.html#Charge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.commands.Charge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Commands a bot to attack a specified position at a running pace. This is faster than Attack but incurs an additional firing delay penalty.</p>
+<dl class="attribute">
+<dt id="api.commands.Charge.botId">
+<tt class="descname">botId</tt><em class="property"> = None</em><a class="headerlink" href="#api.commands.Charge.botId" title="Permalink to this definition">¶</a></dt>
+<dd><p>The name of the bot</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="api.commands.Charge.description">
+<tt class="descname">description</tt><em class="property"> = None</em><a class="headerlink" href="#api.commands.Charge.description" title="Permalink to this definition">¶</a></dt>
+<dd><p>A description of the intention of the bot. This is displayed automatically if the commander sets self.verbose = True</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="api.commands.Charge.target">
+<tt class="descname">target</tt><em class="property"> = None</em><a class="headerlink" href="#api.commands.Charge.target" title="Permalink to this definition">¶</a></dt>
+<dd><p>The target destination (Vector2) or list of destination waypoints ([Vector2])</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="api.commands.Defend">
+<em class="property">class </em><tt class="descclassname">api.commands.</tt><tt class="descname">Defend</tt><big>(</big><em>botId</em>, <em>facingDirection=None</em>, <em>description=''</em><big>)</big><a class="reference internal" href="_modules/api/commands.html#Defend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.commands.Defend" title="Permalink to this definition">¶</a></dt>
+<dd><p>Commands a bot to defend its current position.</p>
+<dl class="attribute">
+<dt id="api.commands.Defend.botId">
+<tt class="descname">botId</tt><em class="property"> = None</em><a class="headerlink" href="#api.commands.Defend.botId" title="Permalink to this definition">¶</a></dt>
+<dd><p>The name of the bot</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="api.commands.Defend.description">
+<tt class="descname">description</tt><em class="property"> = None</em><a class="headerlink" href="#api.commands.Defend.description" title="Permalink to this definition">¶</a></dt>
+<dd><p>A description of the intention of the bot. This is displayed automatically if the commander sets self.verbose = True</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="api.commands.Defend.facingDirection">
+<tt class="descname">facingDirection</tt><em class="property"> = None</em><a class="headerlink" href="#api.commands.Defend.facingDirection" title="Permalink to this definition">¶</a></dt>
+<dd><p>The desired facing direction (Vector2) of the bot.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="api.commands.Move">
+<em class="property">class </em><tt class="descclassname">api.commands.</tt><tt class="descname">Move</tt><big>(</big><em>botId</em>, <em>target</em>, <em>description=''</em><big>)</big><a class="reference internal" href="_modules/api/commands.html#Move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.commands.Move" title="Permalink to this definition">¶</a></dt>
+<dd><p>Commands a bot to run to a specified position without attacking visible enemies.</p>
+<dl class="attribute">
+<dt id="api.commands.Move.botId">
+<tt class="descname">botId</tt><em class="property"> = None</em><a class="headerlink" href="#api.commands.Move.botId" title="Permalink to this definition">¶</a></dt>
+<dd><p>The name of the bot</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="api.commands.Move.description">
+<tt class="descname">description</tt><em class="property"> = None</em><a class="headerlink" href="#api.commands.Move.description" title="Permalink to this definition">¶</a></dt>
+<dd><p>A description of the intention of the bot. This is displayed automatically if the commander sets self.verbose = True</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="api.commands.Move.target">
+<tt class="descname">target</tt><em class="property"> = None</em><a class="headerlink" href="#api.commands.Move.target" title="Permalink to this definition">¶</a></dt>
+<dd><p>The target destination (Vector2) or list of destination waypoints ([Vector2])</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">2. Python API Documentation</a><ul>
+<li><a class="reference internal" href="#module-api.commander">2.1. Commander</a></li>
+<li><a class="reference internal" href="#module-api.gameinfo">2.2. Game Info</a></li>
+<li><a class="reference internal" href="#module-api.commands">2.3. Commands</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="network.html"
+                        title="previous chapter">1. Network Data Protocol</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="examples.html"
+                        title="next chapter">3. Example Python Commanders</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/api.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="examples.html" title="3. Example Python Commanders"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="network.html" title="1. Network Data Protocol"
+             >previous</a> |</li>
+        <li><a href="index.html">Capture The Flag alpha documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, AiGameDev.com KG.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

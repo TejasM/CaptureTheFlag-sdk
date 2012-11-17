@@ -1,0 +1,301 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>examples &mdash; Capture The Flag alpha documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     'alpha',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Capture The Flag alpha documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Capture The Flag alpha documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for examples</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">random</span>
+
+<span class="k">try</span><span class="p">:</span> <span class="c"># Catch import errors when generating documentation.</span>
+    <span class="kn">from</span> <span class="nn">api</span> <span class="kn">import</span> <span class="n">Commander</span>
+    <span class="kn">from</span> <span class="nn">api</span> <span class="kn">import</span> <span class="n">commands</span>
+    <span class="kn">from</span> <span class="nn">aigd</span> <span class="kn">import</span> <span class="n">Vector2</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">Commander</span> <span class="o">=</span> <span class="nb">object</span>
+
+
+<span class="k">def</span> <span class="nf">contains</span><span class="p">(</span><span class="n">area</span><span class="p">,</span> <span class="n">position</span><span class="p">):</span>
+    <span class="n">start</span><span class="p">,</span> <span class="n">finish</span> <span class="o">=</span> <span class="n">area</span>
+    <span class="k">return</span> <span class="n">position</span><span class="o">.</span><span class="n">x</span> <span class="o">&gt;=</span> <span class="n">start</span><span class="o">.</span><span class="n">x</span> <span class="ow">and</span> <span class="n">position</span><span class="o">.</span><span class="n">y</span> <span class="o">&gt;=</span> <span class="n">start</span><span class="o">.</span><span class="n">y</span> <span class="ow">and</span> <span class="n">position</span><span class="o">.</span><span class="n">x</span> <span class="o">&lt;=</span> <span class="n">finish</span><span class="o">.</span><span class="n">x</span> <span class="ow">and</span> <span class="n">position</span><span class="o">.</span><span class="n">y</span> <span class="o">&lt;=</span> <span class="n">finish</span><span class="o">.</span><span class="n">y</span>
+
+
+<div class="viewcode-block" id="RandomCommander"><a class="viewcode-back" href="../examples.html#examples.RandomCommander">[docs]</a><span class="k">class</span> <span class="nc">RandomCommander</span><span class="p">(</span><span class="n">Commander</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Sends everyone to randomized positions or a random choice of flag location.  The behavior of returning the flag</span>
+<span class="sd">    to the home base after capturing it is purely emergent!</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="RandomCommander.tick"><a class="viewcode-back" href="../examples.html#examples.RandomCommander.tick">[docs]</a>    <span class="k">def</span> <span class="nf">tick</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Process all the bots that are done with their orders and available for taking commands.&quot;&quot;&quot;</span>
+
+        <span class="c"># The &#39;bots_available&#39; list is a dynamically calculated list of bots that are done with their commands.</span>
+        <span class="k">for</span> <span class="n">bot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">bots_available</span><span class="p">:</span>
+            <span class="c"># Determine a place to run randomly...</span>
+            <span class="n">target</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span>
+                          <span class="c"># 1) Either a random choice of *current* flag locations, ours or theirs.</span>
+                          <span class="p">[</span><span class="n">f</span><span class="o">.</span><span class="n">position</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
+                          <span class="c"># 2) Or a random choice of the goal locations for returning flags.</span>
+                        <span class="o">+</span> <span class="p">[</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">level</span><span class="o">.</span><span class="n">flagScoreLocations</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
+                          <span class="c"># 3) Or a random position in the entire level, one that&#39;s not blocked.</span>
+                        <span class="o">+</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">level</span><span class="o">.</span><span class="n">findRandomFreePositionInBox</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">level</span><span class="o">.</span><span class="n">area</span><span class="p">)]</span>
+            <span class="p">)</span>
+            <span class="c"># Pick random movement style between going fast or moving carefully.</span>
+            <span class="n">commandType</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="n">commands</span><span class="o">.</span><span class="n">Run</span><span class="p">,</span> <span class="n">commands</span><span class="o">.</span><span class="n">Walk</span><span class="p">])</span>
+            <span class="c"># The bots always engage their enemies if they are encountered.</span>
+            <span class="k">if</span> <span class="n">target</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">issue</span><span class="p">(</span><span class="n">commandType</span><span class="p">,</span> <span class="n">bot</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">engage</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span> <span class="n">description</span> <span class="o">=</span> <span class="s">&#39;random&#39;</span><span class="p">)</span>
+
+</div></div>
+<div class="viewcode-block" id="GreedyCommander"><a class="viewcode-back" href="../examples.html#examples.GreedyCommander">[docs]</a><span class="k">class</span> <span class="nc">GreedyCommander</span><span class="p">(</span><span class="n">Commander</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Always sends everyone to the flag of the enemy and the guy carrying the flag back again</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="GreedyCommander.captured"><a class="viewcode-back" href="../examples.html#examples.GreedyCommander.captured">[docs]</a>    <span class="k">def</span> <span class="nf">captured</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Did this team cature the enemy flag?&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">enemyTeam</span><span class="o">.</span><span class="n">flag</span><span class="o">.</span><span class="n">carrier</span> <span class="o">!=</span> <span class="bp">None</span>
+</div>
+<div class="viewcode-block" id="GreedyCommander.tick"><a class="viewcode-back" href="../examples.html#examples.GreedyCommander.tick">[docs]</a>    <span class="k">def</span> <span class="nf">tick</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Process the bots that are waiting for orders, either send them all to attack or all to defend.&quot;&quot;&quot;</span>
+        <span class="n">captured</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">captured</span><span class="p">()</span>
+
+        <span class="c"># Only process bots that are done with their orders...</span>
+        <span class="k">for</span> <span class="n">bot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">bots_available</span><span class="p">:</span>
+
+            <span class="c"># If this team has captured the flag, then tell this bot...</span>
+            <span class="k">if</span> <span class="n">captured</span><span class="p">:</span>
+                <span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">team</span><span class="o">.</span><span class="n">flagScoreLocation</span>
+                <span class="c"># 1) Either run home, if this bot is the carrier or otherwise randomly.</span>
+                <span class="k">if</span> <span class="n">bot</span><span class="o">.</span><span class="n">flag</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">or</span> <span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="bp">True</span><span class="p">,</span> <span class="bp">False</span><span class="p">])</span> <span class="ow">and</span> <span class="p">(</span><span class="n">target</span> <span class="o">-</span> <span class="n">bot</span><span class="o">.</span><span class="n">position</span><span class="p">)</span><span class="o">.</span><span class="n">length</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mf">8.0</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">issue</span><span class="p">(</span><span class="n">commands</span><span class="o">.</span><span class="n">Run</span><span class="p">,</span> <span class="n">bot</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">description</span> <span class="o">=</span> <span class="s">&#39;scrambling home&#39;</span><span class="p">)</span>
+                <span class="c"># 2) Run to the exact flag location, effectively escorting the carrier.</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">issue</span><span class="p">(</span><span class="n">commands</span><span class="o">.</span><span class="n">Run</span><span class="p">,</span> <span class="n">bot</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">enemyTeam</span><span class="o">.</span><span class="n">flag</span><span class="o">.</span><span class="n">position</span><span class="p">,</span> <span class="n">description</span> <span class="o">=</span> <span class="s">&#39;defending flag carrier&#39;</span><span class="p">)</span>
+
+            <span class="c"># In this case, the flag has not been captured yet so have this bot walk to it!</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">path</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">enemyTeam</span><span class="o">.</span><span class="n">flag</span><span class="o">.</span><span class="n">position</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">contains</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">level</span><span class="o">.</span><span class="n">botSpawnAreas</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">team</span><span class="o">.</span><span class="n">name</span><span class="p">],</span> <span class="n">bot</span><span class="o">.</span><span class="n">position</span><span class="p">):</span>
+                    <span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">team</span><span class="o">.</span><span class="n">flagScoreLocation</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">issue</span><span class="p">(</span><span class="n">commands</span><span class="o">.</span><span class="n">Walk</span><span class="p">,</span> <span class="n">bot</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">description</span> <span class="o">=</span> <span class="s">&#39;walking to enemy flag&#39;</span><span class="p">)</span>
+
+</div></div>
+<div class="viewcode-block" id="DefenderCommander"><a class="viewcode-back" href="../examples.html#examples.DefenderCommander">[docs]</a><span class="k">class</span> <span class="nc">DefenderCommander</span><span class="p">(</span><span class="n">Commander</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Leaves everyone to defend the flag except for one lone guy to grab the other team&#39;s flag.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attacker</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="k">def</span> <span class="nf">tick</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c"># TODO: When defender is down to the last bot that&#39;s attacking the flag, it&#39;ll end up ordering</span>
+        <span class="c"># the attacker to run all the way back from the flag to defend!</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">attacker</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">attacker</span><span class="o">.</span><span class="n">health</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">attacker</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="k">for</span> <span class="n">bot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">bots_available</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">attacker</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">attacker</span> <span class="o">==</span> <span class="n">bot</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">bots_available</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">attacker</span> <span class="o">=</span> <span class="n">bot</span>
+
+                <span class="k">if</span> <span class="n">bot</span><span class="o">.</span><span class="n">flag</span><span class="p">:</span>
+                    <span class="c">#bring it hooome</span>
+                    <span class="n">targetLocation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">team</span><span class="o">.</span><span class="n">flagScoreLocation</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">issue</span><span class="p">(</span><span class="n">commands</span><span class="o">.</span><span class="n">Run</span><span class="p">,</span> <span class="n">bot</span><span class="p">,</span> <span class="n">targetLocation</span><span class="p">,</span> <span class="n">engage</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span> <span class="n">description</span> <span class="o">=</span> <span class="s">&#39;returning enemy flag!&#39;</span><span class="p">)</span>
+
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c"># find the closest flag that isn&#39;t ours</span>
+                    <span class="n">enemyFlagLocation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">enemyTeam</span><span class="o">.</span><span class="n">flag</span><span class="o">.</span><span class="n">position</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">issue</span><span class="p">(</span><span class="n">commands</span><span class="o">.</span><span class="n">Run</span><span class="p">,</span> <span class="n">bot</span><span class="p">,</span> <span class="n">enemyFlagLocation</span><span class="p">,</span> <span class="n">engage</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span> <span class="n">description</span> <span class="o">=</span> <span class="s">&#39;getting enemy flag!&#39;</span><span class="p">)</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">attacker</span> <span class="o">==</span> <span class="n">bot</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">attacker</span> <span class="o">=</span> <span class="bp">None</span>
+
+                <span class="c"># defend the flag!</span>
+                <span class="n">targetPosition</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">team</span><span class="o">.</span><span class="n">flagScoreLocation</span>
+                <span class="n">targetMin</span> <span class="o">=</span> <span class="n">targetPosition</span> <span class="o">-</span> <span class="n">Vector2</span><span class="p">(</span><span class="mf">8.0</span><span class="p">,</span> <span class="mf">8.0</span><span class="p">)</span>
+                <span class="n">targetMax</span> <span class="o">=</span> <span class="n">targetPosition</span> <span class="o">+</span> <span class="n">Vector2</span><span class="p">(</span><span class="mf">8.0</span><span class="p">,</span> <span class="mf">8.0</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">bot</span><span class="o">.</span><span class="n">flag</span><span class="p">:</span>
+                    <span class="c">#bring it hooome</span>
+                    <span class="n">targetLocation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">team</span><span class="o">.</span><span class="n">flagScoreLocation</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">issue</span><span class="p">(</span><span class="n">commands</span><span class="o">.</span><span class="n">Run</span><span class="p">,</span> <span class="n">bot</span><span class="p">,</span> <span class="n">targetLocation</span><span class="p">,</span> <span class="n">engage</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span> <span class="n">description</span> <span class="o">=</span> <span class="s">&#39;returning enemy flag!&#39;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">targetPosition</span> <span class="o">-</span> <span class="n">bot</span><span class="o">.</span><span class="n">position</span><span class="p">)</span><span class="o">.</span><span class="n">length</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mf">9.0</span> <span class="ow">and</span>  <span class="p">(</span><span class="n">targetPosition</span> <span class="o">-</span> <span class="n">bot</span><span class="o">.</span><span class="n">position</span><span class="p">)</span><span class="o">.</span><span class="n">length</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mf">3.0</span> <span class="p">:</span>
+                        <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+                            <span class="n">position</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">level</span><span class="o">.</span><span class="n">findRandomFreePositionInBox</span><span class="p">((</span><span class="n">targetMin</span><span class="p">,</span><span class="n">targetMax</span><span class="p">))</span>
+                            <span class="k">if</span> <span class="n">position</span> <span class="ow">and</span> <span class="p">(</span><span class="n">targetPosition</span> <span class="o">-</span> <span class="n">position</span><span class="p">)</span><span class="o">.</span><span class="n">length</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mf">3.0</span><span class="p">:</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">issue</span><span class="p">(</span><span class="n">commands</span><span class="o">.</span><span class="n">Run</span><span class="p">,</span> <span class="n">bot</span><span class="p">,</span> <span class="n">position</span><span class="p">,</span> <span class="n">description</span> <span class="o">=</span> <span class="s">&#39;defending around flag&#39;</span><span class="p">)</span>
+                                <span class="k">break</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">issue</span><span class="p">(</span><span class="n">commands</span><span class="o">.</span><span class="n">Turn</span><span class="p">,</span> <span class="n">bot</span><span class="p">,</span> <span class="p">(</span><span class="n">targetPosition</span> <span class="o">-</span> <span class="n">bot</span><span class="o">.</span><span class="n">position</span><span class="p">),</span> <span class="n">description</span> <span class="o">=</span> <span class="s">&#39;defending facing flag&#39;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="BalancedCommander"><a class="viewcode-back" href="../examples.html#examples.BalancedCommander">[docs]</a><span class="k">class</span> <span class="nc">BalancedCommander</span><span class="p">(</span><span class="n">Commander</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;An example commander that has one bot attacking, one defending and the rest randomly searching the level for enemies&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attacker</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">defender</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="bp">True</span>
+
+        <span class="c"># Calculate flag positions and store the middle.</span>
+        <span class="n">ours</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">team</span><span class="o">.</span><span class="n">flag</span><span class="o">.</span><span class="n">position</span>
+        <span class="n">theirs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">enemyTeam</span><span class="o">.</span><span class="n">flag</span><span class="o">.</span><span class="n">position</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">middle</span> <span class="o">=</span> <span class="p">(</span><span class="n">theirs</span> <span class="o">+</span> <span class="n">ours</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span>
+
+        <span class="c"># Now figure out the flaking directions, assumed perpendicular.</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="p">(</span><span class="n">ours</span> <span class="o">-</span> <span class="n">theirs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">left</span> <span class="o">=</span> <span class="n">Vector2</span><span class="p">(</span><span class="o">-</span><span class="n">d</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">d</span><span class="o">.</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">normalized</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">right</span> <span class="o">=</span> <span class="n">Vector2</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="o">-</span><span class="n">d</span><span class="o">.</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">normalized</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">front</span> <span class="o">=</span> <span class="n">Vector2</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">d</span><span class="o">.</span><span class="n">y</span><span class="p">)</span><span class="o">.</span><span class="n">normalized</span><span class="p">()</span>
+
+
+    <span class="c"># Add the tick function, called each update</span>
+    <span class="c"># This is where you can do any logic and issue new orders.</span>
+    <span class="k">def</span> <span class="nf">tick</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">attacker</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">attacker</span><span class="o">.</span><span class="n">health</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c"># the attacker is dead we&#39;ll pick another when available</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">attacker</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">defender</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">defender</span><span class="o">.</span><span class="n">health</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">defender</span><span class="o">.</span><span class="n">flag</span><span class="p">):</span>
+            <span class="c"># the defender is dead we&#39;ll pick another when available</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">defender</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="c"># In this example we loop through all living bots without orders (self.game.bots_available)</span>
+        <span class="c"># All other bots will wander randomly</span>
+        <span class="k">for</span> <span class="n">bot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">bots_available</span><span class="p">:</span>           
+            <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">defender</span> <span class="o">==</span> <span class="bp">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">defender</span> <span class="o">==</span> <span class="n">bot</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">bot</span><span class="o">.</span><span class="n">flag</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">defender</span> <span class="o">=</span> <span class="n">bot</span>
+
+                <span class="c"># Stand on a random position in a box of 4m around the flag.</span>
+                <span class="n">targetPosition</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">team</span><span class="o">.</span><span class="n">flagScoreLocation</span>
+                <span class="n">targetMin</span> <span class="o">=</span> <span class="n">targetPosition</span> <span class="o">-</span> <span class="n">Vector2</span><span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)</span>
+                <span class="n">targetMax</span> <span class="o">=</span> <span class="n">targetPosition</span> <span class="o">+</span> <span class="n">Vector2</span><span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)</span>
+                <span class="n">goal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">level</span><span class="o">.</span><span class="n">findRandomFreePositionInBox</span><span class="p">([</span><span class="n">targetMin</span><span class="p">,</span> <span class="n">targetMax</span><span class="p">])</span>
+                
+                <span class="k">if</span> <span class="p">(</span><span class="n">goal</span> <span class="o">-</span> <span class="n">bot</span><span class="o">.</span><span class="n">position</span><span class="p">)</span><span class="o">.</span><span class="n">length</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mf">8.0</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">issue</span><span class="p">(</span><span class="n">commands</span><span class="o">.</span><span class="n">Run</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">defender</span><span class="p">,</span> <span class="n">goal</span><span class="p">,</span> <span class="n">engage</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span> <span class="n">description</span> <span class="o">=</span> <span class="s">&#39;running to defend&#39;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">issue</span><span class="p">(</span><span class="n">commands</span><span class="o">.</span><span class="n">Turn</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">defender</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">middle</span> <span class="o">-</span> <span class="n">bot</span><span class="o">.</span><span class="n">position</span><span class="p">),</span> <span class="n">description</span> <span class="o">=</span> <span class="s">&#39;turning to defend&#39;</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">attacker</span> <span class="o">==</span> <span class="bp">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">attacker</span> <span class="o">==</span> <span class="n">bot</span> <span class="ow">or</span> <span class="n">bot</span><span class="o">.</span><span class="n">flag</span><span class="p">:</span>
+                <span class="c"># Our attacking bot</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">attacker</span> <span class="o">=</span> <span class="n">bot</span>
+
+                <span class="k">if</span> <span class="n">bot</span><span class="o">.</span><span class="n">flag</span><span class="p">:</span>
+                    <span class="c"># Tell the flag carrier to run home!</span>
+                    <span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">team</span><span class="o">.</span><span class="n">flagScoreLocation</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">issue</span><span class="p">(</span><span class="n">commands</span><span class="o">.</span><span class="n">Run</span><span class="p">,</span> <span class="n">bot</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">description</span> <span class="o">=</span> <span class="s">&#39;running home&#39;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">enemyTeam</span><span class="o">.</span><span class="n">flag</span><span class="o">.</span><span class="n">position</span>
+                    <span class="n">flank</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getFlankingPosition</span><span class="p">(</span><span class="n">bot</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">target</span> <span class="o">-</span> <span class="n">flank</span><span class="p">)</span><span class="o">.</span><span class="n">length</span><span class="p">()</span> <span class="o">&gt;</span> <span class="p">(</span><span class="n">bot</span><span class="o">.</span><span class="n">position</span> <span class="o">-</span> <span class="n">target</span><span class="p">)</span><span class="o">.</span><span class="n">length</span><span class="p">():</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">issue</span><span class="p">(</span><span class="n">commands</span><span class="o">.</span><span class="n">Walk</span><span class="p">,</span> <span class="n">bot</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">description</span> <span class="o">=</span> <span class="s">&#39;attack from flank&#39;</span><span class="p">,</span> <span class="n">lookAt</span><span class="o">=</span><span class="n">target</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">issue</span><span class="p">(</span><span class="n">commands</span><span class="o">.</span><span class="n">Run</span><span class="p">,</span> <span class="n">bot</span><span class="p">,</span> <span class="n">flank</span><span class="p">,</span> <span class="n">description</span> <span class="o">=</span> <span class="s">&#39;running to flank&#39;</span><span class="p">)</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c"># All our other (random) bots</span>
+
+                <span class="c"># pick a random position in the level to move to                               </span>
+                <span class="n">box</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">level</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">level</span><span class="o">.</span><span class="n">height</span><span class="p">)</span>
+                <span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">level</span><span class="o">.</span><span class="n">findRandomFreePositionInBox</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">middle</span> <span class="o">+</span> <span class="n">box</span> <span class="o">*</span> <span class="mf">0.4</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">middle</span> <span class="o">-</span> <span class="n">box</span> <span class="o">*</span> <span class="mf">0.4</span><span class="p">))</span>
+
+                <span class="c"># issue the order</span>
+                <span class="k">if</span> <span class="n">target</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">issue</span><span class="p">(</span><span class="n">commands</span><span class="o">.</span><span class="n">Walk</span><span class="p">,</span> <span class="n">bot</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">engage</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span> <span class="n">description</span> <span class="o">=</span> <span class="s">&#39;random&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">getFlankingPosition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bot</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+        <span class="n">flanks</span> <span class="o">=</span> <span class="p">[</span><span class="n">target</span> <span class="o">+</span> <span class="n">f</span> <span class="o">*</span> <span class="mf">16.0</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">right</span><span class="p">]]</span>
+        <span class="n">options</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">f</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">level</span><span class="o">.</span><span class="n">findNearestFreePosition</span><span class="p">(</span><span class="n">f</span><span class="p">),</span> <span class="n">flanks</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">key</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="p">(</span><span class="n">bot</span><span class="o">.</span><span class="n">position</span> <span class="o">-</span> <span class="n">p</span><span class="p">)</span><span class="o">.</span><span class="n">length</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Capture The Flag alpha documentation</a> &raquo;</li>
+          <li><a href="index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, AiGameDev.com KG.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>
