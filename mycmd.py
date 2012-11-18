@@ -9,32 +9,152 @@ from api import commands
 # The maps for CTF are layed out along the X and Z axis in space, but can be
 # effectively be considered 2D.
 from api import Vector2
+import math
 
 
-class PlaceholderCommander(Commander):
+class DefensiveCommander(Commander):
     """
     Rename and modify this class to create your own commander and add mycmd.Placeholder
     to the execution command you use to run the competition.
     """
-
+    numOfDefWanted = 3
+    
+    targetLeft = (Vector2(0.0, 4.0), Vector2(4.0, 4.0))
+    targetAbove = (Vector2(4.0, 0.0), Vector2(4.0, 4.0))
+    targetBelow = (Vector2(4.0, 4.0), Vector2(4.0, 0.0))
+    defendingTargets = (targetLeft, targetAbove, targetBelow)
+    
     def initialize(self):
-        """Use this function to setup your bot before the game starts."""
-        self.verbose = True    # display the command descriptions next to the bot labels
+        self.attackerPairs = []
+        self.defenders = []
+        self.enemies = []
+        self.curEnemy = None
+        if self.game.team.flagScoreLocation.x > 50:
+            self.firstDefender = Vector2(-1.0, 0.0)
+            self.secondDefender = Vector2(-1.0, -1.5)
+            self.thirdDefender = Vector2(-1, -1)
+            temp = self.targetBelow
+            self.targetBelow = self.targetAbove
+            self.targetAbove = temp
+        else:
+            self.firstDefender = Vector2(1.0, 0.0)
+            self.secondDefender = Vector2(1.0, 1.5)
+            self.thirdDefender = Vector2(1, 1)
 
-    def tick(self):
-        """Override this function for your own bots.  Here you can access all the information in self.game,
-        which includes game information, and self.level which includes information about the level."""
 
-        # for all bots which aren't currently doing anything
-        for bot in self.game.bots_available:
-            if bot.flag:
-                # if a bot has the flag run to the scoring location
-                flagScoreLocation = self.game.team.flagScoreLocation
-                self.issue(commands.Charge, bot, flagScoreLocation, description = 'Run to my flag')
+    def attackInPair(self, bots, i):
+        bot1 = bots[i]
+        bot2 = bots[i+1]
+        pairOfAttackers = (bot1, bot2)
+        if pairOfAttackers in self.attackerPairs:
+            return
+        else:
+            self.attackerPairs.append(pairOfAttackers)
+            if bot1.flag or bot2.flag:
+                # bring it hooome
+                targetLocation = self.game.team.flagScoreLocation
+                self.issue(commands.Charge, bot1, targetLocation, description='returning enemy flag!')
+                self.issue(commands.Charge, bot2, targetLocation, description='returning enemy flag!')
             else:
-                # otherwise run to where the flag is
-                enemyFlag = self.game.enemyTeam.flag.position
-                self.issue(commands.Charge, bot, enemyFlag, description = 'Run to enemy flag')
+                enemyFlagLocation = self.game.enemyTeam.flag.position
+                self.issue(commands.Attack, bot1, enemyFlagLocation, description='getting enemy flag!') # find the closest flag that isn't ours
+                self.issue(commands.Attack, bot2, enemyFlagLocation, description='getting enemy flag!')
+
+    def defendBase(self, i, bot):
+        targetPosition = self.game.team.flagScoreLocation
+        targetMin = targetPosition - (self.defendingTargets[i])[0]
+        targetMax = targetPosition + (self.defendingTargets[i])[1]      
+                
+        if bot.flag:
+            # bring it hooome
+            targetLocation = self.game.team.flagScoreLocation
+            self.issue(commands.Charge, bot, targetLocation, description='returning enemy flag!')
+        elif (targetPosition - bot.position).length() > 1.0:
+            while True:
+                position = self.level.findRandomFreePositionInBox((targetMin, targetMax))
+                if position and (targetPosition - position).length() > 0.1:
+                    self.issue(commands.Move, bot, position, description='defending around flag')
+                    break
+        
+        elif i == 0:
+            self.issue(commands.Defend, bot, self.firstDefender, description='defending facing flag')
+        elif i == 1:
+            self.issue(commands.Defend, bot, self.secondDefender, description='defending facing flag')
+        else:
+            self.issue(commands.Defend, bot, self.thirdDefender , description='defending facing flag')
+    
+    def attackAlone(self, bot):
+        targetLocation = self.game.team.flagScoreLocation
+        if bot.flag:
+            self.issue(commands.Charge, bot, targetLocation, description='returning enemy flag!')
+        else:
+            enemyFlagLocation = self.game.enemyTeam.flag.position
+            self.issue(commands.Attack, bot, enemyFlagLocation, description='getting enemy flag!')
+            
+    def isBotDefender(self, bot):
+        for defender in self.defenders:   
+            if defender[0] == bot:
+                return True
+        return False
+    
+    def hasEnemies(self, bot):
+        for defender in self.defenders:   
+            if defender[0] == bot:
+                if defender[1]:
+                    return True
+        return False
+    
+    def inVOF(self, bot, enemy):
+        facing = bot.facingDirection
+        neededDir = enemy.position - facing
+        cosTheta = Vector2.dotProduct(facing, neededDir)/(facing.length()*neededDir.length())       
+        if math.acos(cosTheta) <= self.level.FOVangle:
+            return True
+        return False
+            
+    def tick(self):
+        for attackerPair in self.attackerPairs[:]:
+            if attackerPair[0].health <= 0 or attackerPair[1].health <= 0:
+                self.attackerPairs.remove(attackerPair)
+                if attackerPair[1].health > 0:
+                    self.attackAlone(attackerPair[1])
+                elif attackerPair[0].health > 0:
+                    self.attackAlone(attackerPair[0])
+                    
+        for defender in self.defenders[:]:
+            if defender[0].health <=0:
+                self.defenders.remove(defender)
+                continue
+            i = self.defenders.index(defender)
+            if defender[1] and defender[1].health <= 0:
+                self.enemies.remove(defender[1])
+                self.defenders[i] = (defender[0], None)
+                self.defendBase(i, defender[0])
+            for enemy in defender[0].visibleEnemies:
+                if (enemy.position - defender[0].position).length() < self.level.firingDistance + 7.0 and not enemy == defender[1]:
+                    self.enemies.append(enemy)
+                    self.defenders[i] = (defender[0], enemy)
+            if defender[1] and not self.inVOF(defender[0], defender[1]):
+                self.issue(commands.Defend, defender[0], defender[1].position - defender[0].position, description='defending facing enemy')
+            
+        bots = self.game.bots_available
+        
+        for i, bot in enumerate(bots):
+            if len(self.defenders)>=self.numOfDefWanted and not self.isBotDefender(bot):
+                if  i%2==1 and len(bots) != i+1:
+                    self.attackInPair(bots, i)
+                elif not self.isBotDefender(bot):
+                    self.attackAlone(bot)                    
+            else:
+                # defend the flag!
+                if not self.isBotDefender(bot):
+                    self.defenders.append((bot, None))
+                if self.hasEnemies(bot):
+                    continue
+                else:                    
+                    self.defendBase(self.defenders.index((bot, None)), bot)
+           
+                            
 
     def shutdown(self):
         """Use this function to teardown your bot after the game is over, or perform an

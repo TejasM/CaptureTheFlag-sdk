@@ -8,7 +8,7 @@ REM the lines that start with the SET command.
 REM START! ------- 8< -------- You should customize the next parameters.
 
 REM Customize which commander AIs are run against each other...
-SET COMPETITORS=examples.Balanced mycmd.Placeholder
+SET COMPETITORS=examples.Balanced mycmd.DefensiveCommander
 
 
 REM STOP! ------- 8< -------- No changes below this line are required.

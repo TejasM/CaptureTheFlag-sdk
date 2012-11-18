@@ -25,7 +25,7 @@ if __name__ == '__main__':
 
     total = 0
     scores = {}    
-    pairs = itertools.permutations(['examples.Greedy', 'examples.Balanced', 'examples.Random', 'examples.Defender'], 2)
+    pairs = itertools.permutations(['examples.Greedy', 'examples.Balanced', 'mycmd.DefensiveCommander'], 2)
     games = itertools.product(['map00', 'map01', 'map10'], pairs)
     for map, results in p.map(run, games):
         for bot, score in results.items():
