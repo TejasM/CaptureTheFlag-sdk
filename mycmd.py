@@ -30,9 +30,7 @@ class DefensiveCommander(Commander):
         self.enemies = []
         self.curEnemy = None
         if self.game.team.flagScoreLocation.x > 50:
-            temp = self.targetBelow
-            self.targetBelow = self.targetAbove
-            self.targetAbove = temp
+            self.targetBelow, self.targetAbove = self.targetAbove, self.targetBelow
 
 
     def attackInPair(self, bots, i):
