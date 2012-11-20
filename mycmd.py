@@ -24,6 +24,8 @@ class DefensiveCommander(Commander):
     targetBelow = (Vector2(4.0, 4.0), Vector2(4.0, 0.0))
     defendingTargets = (targetLeft, targetAbove, targetBelow)
     
+    
+    
     def initialize(self):
         self.attackerPairs = []
         self.defenders = []
@@ -31,7 +33,22 @@ class DefensiveCommander(Commander):
         self.curEnemy = None
         if self.game.team.flagScoreLocation.x > 50:
             self.targetBelow, self.targetAbove = self.targetAbove, self.targetBelow
-
+        #Flanking Stuff
+        # Calculate flag positions and store the middle.
+        ours = self.game.team.flag.position
+        theirs = self.game.enemyTeam.flag.position
+        self.middle = (theirs + ours) / 2.0
+    
+        # Now figure out the flaking directions, assumed perpendicular.
+        d = (ours - theirs)
+        self.left = Vector2(-d.y, d.x).normalized()
+        self.right = Vector2(d.y, -d.x).normalized()
+        self.front = Vector2(d.x, d.y).normalized()
+        
+    def getFlankingPosition(self, bot, target):
+        flanks = [target + f * 16.0 for f in [self.left, self.right]]
+        options = map(lambda f: self.level.findNearestFreePosition(f), flanks)
+        return sorted(options, key = lambda p: (bot.position - p).length())[0]
 
     def attackInPair(self, bots, i):
         bot1 = bots[i]
@@ -47,12 +64,22 @@ class DefensiveCommander(Commander):
                 self.issue(commands.Charge, bot1, targetLocation, description='returning enemy flag!')
                 self.issue(commands.Charge, bot2, targetLocation, description='returning enemy flag!')
             else:
-                enemyFlagLocation = self.game.enemyTeam.flag.position
-                self.issue(commands.Attack, bot1, enemyFlagLocation, description='getting enemy flag!') # find the closest flag that isn't ours
-                self.issue(commands.Attack, bot2, enemyFlagLocation, description='getting enemy flag!')
+                target = self.game.enemyTeam.flag.position
+                flank = self.getFlankingPosition(bot1, target)
+                if (target - flank).length() > (bot1.position - target).length():
+                    self.issue(commands.Attack, bot1, target, description = 'attack from flank', lookAt=target)
+                else:
+                    flank = self.level.findNearestFreePosition(flank)
+                    self.issue(commands.Attack, bot1, flank, description = 'running to flank')
+                flank = self.getFlankingPosition(bot2, target)
+                if (target - flank).length() > (bot2.position - target).length():
+                    self.issue(commands.Attack, bot2, target, description = 'attack from flank', lookAt=target)
+                else:
+                    flank = self.level.findNearestFreePosition(flank)
+                    self.issue(commands.Attack, bot2, flank, description = 'running to flank')
 
     def defendBase(self, i, bot):
-        targetPosition = self.game.team.flagScoreLocation
+        targetPosition = self.game.team.flag.position
         targetMin = targetPosition - (self.defendingTargets[i])[0]
         targetMax = targetPosition + (self.defendingTargets[i])[1]      
                 
@@ -60,6 +87,8 @@ class DefensiveCommander(Commander):
             # bring it hooome
             targetLocation = self.game.team.flagScoreLocation
             self.issue(commands.Charge, bot, targetLocation, description='returning enemy flag!')
+        elif targetPosition != self.game.team.flagScoreLocation:
+            self.issue(commands.Attack, bot, targetPosition, description='getting my flag!', lookAt=targetPosition)
         else:
             position = self.level.findRandomFreePositionInBox((targetMin, targetMax))
             self.issue(commands.Move, bot, position, description='defending around flag')
@@ -69,8 +98,13 @@ class DefensiveCommander(Commander):
         if bot.flag:
             self.issue(commands.Charge, bot, targetLocation, description='returning enemy flag!')
         else:
-            enemyFlagLocation = self.game.enemyTeam.flag.position
-            self.issue(commands.Attack, bot, enemyFlagLocation, description='getting enemy flag!')
+            target = self.game.enemyTeam.flag.position
+            flank = self.getFlankingPosition(bot, target)
+            if (target - flank).length() > (bot.position - target).length():
+                self.issue(commands.Attack, bot, target, description = 'attack from flank', lookAt=target)
+            else:
+                flank = self.level.findNearestFreePosition(flank)
+                self.issue(commands.Move, bot, flank, description = 'running to flank')
             
     def isBotDefender(self, bot):
         for defender in self.defenders:   
@@ -121,6 +155,8 @@ class DefensiveCommander(Commander):
                 if (enemy.position - defender[0].position).length() < self.level.firingDistance + 7.0 and not enemy == defender[1]:
                     self.enemies.append(enemy)
                     self.defenders[i] = (defender[0], enemy)
+                    self.issue(commands.Defend, defender[0], enemy.position - defender[0].position, description='defending facing enemy')
+                    continue
             #If there is an active enemy and is not in VOF then turn towards him
             if defender[1] and not self.inVOF(defender[0], defender[1]):
                 self.issue(commands.Defend, defender[0], defender[1].position - defender[0].position, description='defending facing enemy')
