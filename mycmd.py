@@ -10,6 +10,7 @@ from api import commands
 # effectively be considered 2D.
 from api import Vector2
 import math
+import sys
 
 
 class DefensiveCommander(Commander):
@@ -128,6 +129,13 @@ class DefensiveCommander(Commander):
         if math.acos(cosTheta) <= self.level.FOVangle/2:
             return True
         return False
+    
+    def getClosestEnemy(self, bot):
+        if len(bot.visibleEnemies) == 0:
+            return None
+        if len(bot.visibleEnemies) == 1:
+            return bot.visibleEnemies[0]
+        return reduce(lambda x,y: x if (x.position-bot.position).length() <= (y.position - bot.position).length() else y, bot.visibleEnemies)
             
     def tick(self):
         #Update Attackers if one/both died
@@ -151,12 +159,12 @@ class DefensiveCommander(Commander):
                 self.defenders[i] = (defender[0], None)
                 self.defendBase(i, defender[0])
             #If enemies are close to shooting distance make them active enemies
-            for enemy in defender[0].visibleEnemies:
-                if (enemy.position - defender[0].position).length() < self.level.firingDistance + 7.0 and not enemy == defender[1]:
-                    self.enemies.append(enemy)
-                    self.defenders[i] = (defender[0], enemy)
-                    self.issue(commands.Defend, defender[0], enemy.position - defender[0].position, description='defending facing enemy')
-                    continue
+            enemy = self.getClosestEnemy(defender[0])
+            if  enemy and (enemy.position - defender[0].position).length() < self.level.firingDistance + 7.0 and not enemy == defender[1]:
+                self.enemies.append(enemy)
+                self.defenders[i] = (defender[0], enemy)
+                self.issue(commands.Defend, defender[0], enemy.position - defender[0].position, description='defending facing enemy')
+                continue
             #If there is an active enemy and is not in VOF then turn towards him
             if defender[1] and not self.inVOF(defender[0], defender[1]):
                 self.issue(commands.Defend, defender[0], defender[1].position - defender[0].position, description='defending facing enemy')
