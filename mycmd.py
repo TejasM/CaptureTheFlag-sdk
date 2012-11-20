@@ -134,8 +134,15 @@ class DefensiveCommander(Commander):
         if len(bot.visibleEnemies) == 0:
             return None
         if len(bot.visibleEnemies) == 1:
-            return bot.visibleEnemies[0]
-        return reduce(lambda x,y: x if (x.position-bot.position).length() <= (y.position - bot.position).length() else y, bot.visibleEnemies)
+            if bot.visibleEnemies[0].health > 0:
+                return bot.visibleEnemies[0]
+            else:
+                return None
+        enemy = reduce(lambda x,y: x if x.health > 0 and (x.position-bot.position).length() <= (y.position - bot.position).length() else y, bot.visibleEnemies)
+        if enemy.health > 0:
+            return enemy
+        else:
+            return None
             
     def tick(self):
         #Update Attackers if one/both died
@@ -158,6 +165,7 @@ class DefensiveCommander(Commander):
                 self.enemies.remove(defender[1])
                 self.defenders[i] = (defender[0], None)
                 self.defendBase(i, defender[0])
+                continue
             #If enemies are close to shooting distance make them active enemies
             enemy = self.getClosestEnemy(defender[0])
             if  enemy and (enemy.position - defender[0].position).length() < self.level.firingDistance + 7.0 and not enemy == defender[1]:
@@ -168,7 +176,9 @@ class DefensiveCommander(Commander):
             #If there is an active enemy and is not in VOF then turn towards him
             if defender[1] and not self.inVOF(defender[0], defender[1]):
                 self.issue(commands.Defend, defender[0], defender[1].position - defender[0].position, description='defending facing enemy')
-        
+                continue
+            if defender[0].state == 4 and (self.game.team.flag.position == self.game.team.flagScoreLocation):
+                self.defendBase(i, defender[0])
         #If there are still bots idle:
         bots = self.game.bots_available
         

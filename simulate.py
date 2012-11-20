@@ -17,7 +17,7 @@ from game.application import CaptureTheFlag
 
 
 # By default load these commanders.
-defaults = ['mycmd.DefensiveCommander', 'examples.Balanced']
+defaults = ['mycmd.DefensiveCommander', 'examples.Greedy']
 
 
 def main(PreferedRunner, args, **kwargs):
