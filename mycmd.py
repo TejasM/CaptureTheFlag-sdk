@@ -13,27 +13,58 @@ import math
 import sys
 
 
+def distance(vector1, vector2):
+    return (vector1-vector2).length();
+
+def distanceBetween(bot1, bot2):
+    return distance(bot1.position, bot2.position)
+
 class DefensiveCommander(Commander):
+    """
+    Intelligence Objects
+    """
+    #enemies in radius:
+    radius = 35.0
+    closeEnemies = set()
+    
+    flagGone = False
+    
     """
     Rename and modify this class to create your own commander and add mycmd.Placeholder
     to the execution command you use to run the competition.
     """
-    numOfDefWanted = 2
+    numOfDefWanted = 3
     
-    targetLeft = (Vector2(0.0, 4.0), Vector2(4.0, 4.0))
-    targetAbove = (Vector2(4.0, 0.0), Vector2(4.0, 4.0))
-    targetBelow = (Vector2(4.0, 4.0), Vector2(4.0, 0.0))
-    defendingTargets = (targetLeft, targetAbove, targetBelow)
+    targetLeft = Vector2(-1.0, 0.0)
+    targetAbove = Vector2(0.0, -1.0)
+    targetBelow = Vector2(0.0, 1.0)
+    defendingTargets = ()
     
+    def gatherIntel(self):
+        self.closeEnemies = set()
+        bots = self.game.bots_alive
+        flagPosition = self.game.team.flag
+        for bot in bots:
+            for enemy in bot.visibleEnemies:
+                if distanceBetween(enemy, flagPosition) < self.radius and enemy.health > 0:
+                    self.closeEnemies.add(enemy)
+        if self.game.team.flag.position != self.game.team.flagScoreLocation:
+            self.flagGone = True
+        else:
+            self.flagGone = False
     
     
     def initialize(self):
         self.attackerPairs = []
         self.defenders = []
-        self.enemies = []
+        self.enemies = set() 
         self.curEnemy = None
-        if self.game.team.flagScoreLocation.x > 50:
-            self.targetBelow, self.targetAbove = self.targetAbove, self.targetBelow
+        if self.game.team.flagScoreLocation.x > self.level.width/2:
+            self.targetLeft = Vector2(1.0, 0.0)
+        self.defendingTargets = (self.targetLeft, self.targetAbove, self.targetBelow)
+
+            
+            
         #Flanking Stuff
         # Calculate flag positions and store the middle.
         ours = self.game.team.flag.position
@@ -64,35 +95,45 @@ class DefensiveCommander(Commander):
                 targetLocation = self.game.team.flagScoreLocation
                 self.issue(commands.Charge, bot1, targetLocation, description='returning enemy flag!')
                 self.issue(commands.Charge, bot2, targetLocation, description='returning enemy flag!')
+            elif self.flagGone:
+                targetLocation = self.game.team.flag.position
+                self.issue(commands.Attack, bot1, targetLocation, description='Getting our flag!')
+                self.issue(commands.Attack, bot2, targetLocation, description='Getting our flag!')
             else:
                 target = self.game.enemyTeam.flag.position
                 flank = self.getFlankingPosition(bot1, target)
-                if (target - flank).length() > (bot1.position - target).length():
+                if  target and (target - flank).length() > (bot1.position - target).length():
                     self.issue(commands.Attack, bot1, target, description = 'attack from flank', lookAt=target)
                 else:
                     flank = self.level.findNearestFreePosition(flank)
                     self.issue(commands.Attack, bot1, flank, description = 'running to flank')
                 flank = self.getFlankingPosition(bot2, target)
-                if (target - flank).length() > (bot2.position - target).length():
+                if target and (target - flank).length() > (bot2.position - target).length():
                     self.issue(commands.Attack, bot2, target, description = 'attack from flank', lookAt=target)
                 else:
                     flank = self.level.findNearestFreePosition(flank)
                     self.issue(commands.Attack, bot2, flank, description = 'running to flank')
-
+    
+    def inArea(self, position, target):
+        if distance(position, target) < 0.75:
+            return True
+        return False
+    
     def defendBase(self, i, bot):
         targetPosition = self.game.team.flag.position
-        targetMin = targetPosition - (self.defendingTargets[i])[0]
-        targetMax = targetPosition + (self.defendingTargets[i])[1]      
+        targetMin = targetPosition - self.defendingTargets[i]    
                 
         if bot.flag:
             # bring it hooome
             targetLocation = self.game.team.flagScoreLocation
             self.issue(commands.Charge, bot, targetLocation, description='returning enemy flag!')
-        elif targetPosition != self.game.team.flagScoreLocation:
-            self.issue(commands.Attack, bot, targetPosition, description='getting my flag!', lookAt=targetPosition)
-        else:
-            position = self.level.findRandomFreePositionInBox((targetMin, targetMax))
+        elif self.flagGone:
+            self.issue(commands.Attack, bot, targetPosition, description='getting my flag!')
+        elif not self.inArea(bot.position, targetMin):
+            position = self.level.findNearestFreePosition(targetMin)
             self.issue(commands.Move, bot, position, description='defending around flag')
+        elif bot.state != 2:
+            self.issue(commands.Defend, bot, -(self.defendingTargets[i]), description="Defending base")
     
     def attackAlone(self, bot):
         targetLocation = self.game.team.flagScoreLocation
@@ -101,7 +142,7 @@ class DefensiveCommander(Commander):
         else:
             target = self.game.enemyTeam.flag.position
             flank = self.getFlankingPosition(bot, target)
-            if (target - flank).length() > (bot.position - target).length():
+            if target and (target - flank).length() > (bot.position - target).length():
                 self.issue(commands.Attack, bot, target, description = 'attack from flank', lookAt=target)
             else:
                 flank = self.level.findNearestFreePosition(flank)
@@ -126,7 +167,7 @@ class DefensiveCommander(Commander):
         cosTheta = (facing.x*neededDir.x + facing.y*neededDir.y)/(facing.length()*neededDir.length())
         if cosTheta >1:      
             cosTheta = 1
-        if math.acos(cosTheta) <= self.level.FOVangle/2:
+        if math.acos(cosTheta) <= self.level.FOVangle/2.5:
             return True
         return False
     
@@ -143,8 +184,44 @@ class DefensiveCommander(Commander):
             return enemy
         else:
             return None
-            
+    
+    def findClosestDefender(self, enemy, defenders):
+        if len(defenders)==0:
+            return None;
+        if len(defenders)==1:
+            return defenders[0]
+        return reduce(lambda x,y: x if distanceBetween(enemy, x[0]) <= distanceBetween(enemy, y[0]) else y, defenders)
+    def enemiesCloseBy(self, enemy, enemies):
+        closeEnemies = [enemy]
+        for enemy2 in enemies:
+            if enemy2 != enemy:
+                if distanceBetween(enemy2, enemy) < 3.0:
+                    closeEnemies.add(enemy2)
+        return closeEnemies
+        
+    def orderDefenders(self):
+        for defender in self.defenders[:]:
+        #Remove Defender if dead
+            if defender[0].health <= 0:
+                self.defenders.remove(defender)
+            elif defender[1] and (defender[1].health <=0 or not defender[1] in self.closeEnemies or not defender[1] not in defender[0].visibleEnemies):
+                self.defenders[self.defenders.index(defender)] = (defender[0], None)       
+                
+        defendersAvailable = filter(lambda x: x[1]==None, self.defenders)
+        for enemy in self.closeEnemies:
+            defender = self.findClosestDefender(enemy, defendersAvailable)
+            if defender and defender[0]:
+                defendersAvailable.remove(defender)
+                self.defenders[self.defenders.index(defender)] = (defender[0], enemy)
+                self.issue(commands.Defend, defender[0], enemy.position - defender[0].position, description="Defending against closest enemy")
+
+        for i, defendersDoingNothing in enumerate(defendersAvailable):
+            self.defendBase(i, defendersDoingNothing[0])
+        
     def tick(self):
+        
+        self.gatherIntel()
+        
         #Update Attackers if one/both died
         for attackerPair in self.attackerPairs[:]:
             if attackerPair[0].health <= 0 or attackerPair[1].health <= 0:
@@ -153,32 +230,11 @@ class DefensiveCommander(Commander):
                     self.attackAlone(attackerPair[1])
                 elif attackerPair[0].health > 0:
                     self.attackAlone(attackerPair[0])
+                    
         #Update Defenders   
-        for defender in self.defenders[:]:
-            #Remove Defender if dead
-            if defender[0].health <=0:
-                self.defenders.remove(defender)
-                continue
-            i = self.defenders.index(defender)
-            #If enemy is dead go back to defending base
-            if (defender[1] and defender[1].health <= 0) or (defender[1] and not defender[1] in defender[0].visibleEnemies):
-                self.enemies.remove(defender[1])
-                self.defenders[i] = (defender[0], None)
-                self.defendBase(i, defender[0])
-                continue
-            #If enemies are close to shooting distance make them active enemies
-            enemy = self.getClosestEnemy(defender[0])
-            if  enemy and (enemy.position - defender[0].position).length() < self.level.firingDistance + 7.0 and not enemy == defender[1]:
-                self.enemies.append(enemy)
-                self.defenders[i] = (defender[0], enemy)
-                self.issue(commands.Defend, defender[0], enemy.position - defender[0].position, description='defending facing enemy')
-                continue
-            #If there is an active enemy and is not in VOF then turn towards him
-            if defender[1] and not self.inVOF(defender[0], defender[1]):
-                self.issue(commands.Defend, defender[0], defender[1].position - defender[0].position, description='defending facing enemy')
-                continue
-            if defender[0].state == 4 and (self.game.team.flag.position == self.game.team.flagScoreLocation):
-                self.defendBase(i, defender[0])
+        self.orderDefenders()
+        
+        
         #If there are still bots idle:
         bots = self.game.bots_available
         

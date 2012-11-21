@@ -34,7 +34,7 @@ def main(PreferedRunner, args, **kwargs):
         if not args:
             args = defaults
 
-        app = CaptureTheFlag(args, map = 'map10', **kwargs)
+        app = CaptureTheFlag(args, map = 'map00', **kwargs)
         if not runner.run(app):
             break
         r = app.reset
