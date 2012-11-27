@@ -11,13 +11,7 @@ from api import commands
 from api import Vector2
 import math
 import sys
-
-
-def distance(vector1, vector2):
-    return (vector1-vector2).length();
-
-def distanceBetween(bot1, bot2):
-    return distance(bot1.position, bot2.position)
+import util
 
 class DefensiveCommander(Commander):
     """
@@ -46,7 +40,7 @@ class DefensiveCommander(Commander):
         flagPosition = self.game.team.flag
         for bot in bots:
             for enemy in bot.visibleEnemies:
-                if distanceBetween(enemy, flagPosition) < self.radius and enemy.health > 0:
+                if util.distanceBetween(enemy, flagPosition) < self.radius and enemy.health > 0:
                     self.closeEnemies.add(enemy)
         if self.game.team.flag.position != self.game.team.flagScoreLocation:
             self.flagGone = True
@@ -115,7 +109,7 @@ class DefensiveCommander(Commander):
                     self.issue(commands.Attack, bot2, flank, description = 'running to flank')
     
     def inArea(self, position, target):
-        if distance(position, target) < 0.75:
+        if util.distance(position, target) < 0.75:
             return True
         return False
     
@@ -190,12 +184,12 @@ class DefensiveCommander(Commander):
             return None;
         if len(defenders)==1:
             return defenders[0]
-        return reduce(lambda x,y: x if distanceBetween(enemy, x[0]) <= distanceBetween(enemy, y[0]) else y, defenders)
+        return reduce(lambda x,y: x if util.distanceBetween(enemy, x[0]) <= util.distanceBetween(enemy, y[0]) else y, defenders)
     def enemiesCloseBy(self, enemy, enemies):
         closeEnemies = [enemy]
         for enemy2 in enemies:
             if enemy2 != enemy:
-                if distanceBetween(enemy2, enemy) < 3.0:
+                if util.distanceBetween(enemy2, enemy) < 3.0:
                     closeEnemies.add(enemy2)
         return closeEnemies
         
